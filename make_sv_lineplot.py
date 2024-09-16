@@ -10,9 +10,10 @@ def get_t2t_sv():
         no arguments
 
      Returns:
-        df_t2t_insertions: dataframe containing insertions from the t2t file
-        df_t2t_deletions: dataframe containing deletions from the t2t file
+        df_t2t_insertions (pandas dataframe): dataframe containing insertions from the t2t file
+        df_t2t_deletions (pandas dataframe): dataframe containing deletions from the t2t file
     """
+
     # Asks for the input path for the t2t sv file.
     input_path_t2t = input("Give the path to the t2t sv file: ")
     print("given path: " + input_path_t2t)
@@ -50,8 +51,8 @@ def get_hg38_sv():
         no arguments
 
      Returns:
-        df_hg38_insertions: dataframe containing insertions from the Hg38 file
-        df_hg38_deletions: dataframe containing deletions from the Hg38 file
+        df_hg38_insertions (dataframe): dataframe containing insertions from the Hg38 file
+        df_hg38_deletions (dataframe): dataframe containing deletions from the Hg38 file
     """
 
     # Asks for the input path for the hg38 sv file.
@@ -88,7 +89,29 @@ def get_hg38_sv():
 def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions,
                             hg38_df_deletions):
 
-    """deze"""
+    """
+    This functions gets the dataframes with insertions or deletions from both the t2t and hg38 reference genome.
+    It then goes through the dataframes and gets the amount of variations whose length is in between certain lengths.
+
+    Args:
+        df_t2t_insertions (dataframe): dataframe containing insertions from the t2t file.
+        t2t_df_deletions_absolute (dataframe): dataframe containing deletions whose length has been made absolute
+        from the t2t file.
+        df_hg38_insertions (dataframe): dataframe containing insertions from the hg38 file.
+        hg38_df_deletions (dataframe): dataframe containing deletions from the hg38 file.
+
+    Returns:
+        t2t_ins_distance (list): list with the amount of insertions from the t2t file whose length is in between certain
+        lengths.
+        t2t_del_distances (list): list with the amount of deletions from the t2t file whose length is in between certain
+        lengths.
+        hg38_ins_distances (list): list with the amount of insertions from the hg38 file whose length is in between
+        certain lengths.
+        hg38_del_distances (list): list with the amount of deletions from the hg38 file whose length is in between
+        certain lengths.
+        highest_count (int): the highest count of variations in compared to the groups.
+
+    """
 
     # Creates empty lists that will be used for the lengths of the into group separated variations.
     hg38_ins_distances = []
@@ -98,8 +121,9 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
     t2t_del_distances = []
 
 
-    # Separates the insertions from the hg38 file based on their length and adds the length of the subset into the
-    # list that will be used as values for the plot.
+    # Separates the insertions from the hg38 file based on the length of the insertions and adds the length of the
+    # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
+    # numbers corresponding with the amount of variations that have a certain length.
     hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(30, 50)]))
     hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(50, 100)]))
     hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(100, 200)]))
@@ -113,9 +137,11 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
     hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(5000, 10000)]))
     hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"] > 10000]))
 
-    # Separates the deletions from the hg38 file based on their length and adds the length of the subset into the list
-    # that will be used as values for the plot. The deletions dataframe only has one column, so the specifc dataframe
-    # doesn't need to be indicated.
+
+    # Separates the insertions from the hg38 file based on the length of the deletions and adds the length of the
+    # subset into the list that will be used as values for the plot. So hg38_del_distances contains at the end 12
+    # numbers corresponding with the amount of variations that have a certain length.
+    # The deletions dataframe only has one column, so the specifc dataframe doesn't need to be indicated.
     hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(30, 50)]))
     hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(50, 100)]))
     hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(100, 200)]))
@@ -131,8 +157,9 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
 
     # ----------------------------------------------------------------------------------------------------
 
-    # Separates the insertions from the t2t file based on their length and adds the length of the subset into the list
-    # that will be used as values for the plot.
+    # Separates the insertions from the t2t file based on the length of the insertions and adds the length of the
+    # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
+    # numbers corresponding with the amount of variations that have a certain length.
     t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(30, 50)]))
     t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(50, 100)]))
     t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(100, 200)]))
@@ -146,9 +173,10 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
     t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(5000, 10000)]))
     t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"] > 10000]))
 
-    # Separates the deletions from the t2t file based on their length and adds the length of the subset into the list
-    # that will be used as values for the plot. The deletions dataframe only has one column, so the specifc dataframe
-    # doesn't need to be indicated.
+    # Separates the insertions from the t2t file based on the length of the deletions and adds the length of the
+    # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
+    # numbers corresponding with the amount of variations that have a certain length.
+    # The deletions dataframe only has one column, so the specifc dataframe doesn't need to be indicated.
     t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(30, 50)]))
     t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(50, 100)]))
     t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(100, 200)]))
@@ -173,6 +201,18 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
 
 
 def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count):
+    """This function plots one figure containing two different plots. The first plot has the indels balance with the
+    CHM13 reference genome and the second plot has the indel balance with the Hg38 reference genome.
+
+    Args:
+        t2t_ins_distances (list): list of the lengths of the insertions found with the t2t reference genome.
+        t2t_del_distances (list): list of the lengths of the deletions found with the t2t reference genome.
+        hg38_ins_distances (list): list of the lengths of the insertions found with the hg38 reference genome.
+        hg38_del_distances (list): list of the lengths of the deletions found with the hg38 reference genome.
+
+    Returns:
+        nothing
+    """
 
     # List with the different groups of indel lengths. Used for the x-axis.
     lengths = ["30-50", "50-100 ", "100-200", "200-300", "300-400", "400-500", "500-750", "750-1k", "1k-2k", "2k-5k",
