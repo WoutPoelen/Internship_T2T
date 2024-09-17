@@ -19,11 +19,8 @@ Over the years several reference genomes for humans have been developed with the
 
 Follow these steps to make the lineplot showing the difference in SV indel balance between the Hg38 and the T2T reference genomes:
 1. Go to the server where the VCF files that you want to plot are located (one from the Hg38 reference genome and one from the T2T reference genome).
-2. Perform the following bcftools command (assuming that bcftools is installed):
-   
-- bcftools query -f "%CHROM %POS %FILTER [%GT] %INFO/SVLEN\n" -i 'INFO/SVTYPE="DEL" || INFO/SVTYPE="INS"' Input_file.vcf > ~/output_file.txt
-
-5. run the [make_sv_lineplot.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/make_sv_lineplot.py) script.
-6. Give the path to the filtered T2T file
-7. Give the path to the filtered Hg38 file
+2. run the [run_compare_indel_balance.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/run_compare_indel_balance.sh) script with first the input VCF file and then the output file.
+3. run the [make_sv_lineplot.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/make_sv_lineplot.py) script.
+4. Give the path to the filtered T2T file.
+5. Give the path to the filtered Hg38 file.
 
