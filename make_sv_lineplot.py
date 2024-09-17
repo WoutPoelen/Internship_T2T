@@ -124,71 +124,36 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
     # Separates the insertions from the hg38 file based on the length of the insertions and adds the length of the
     # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
     # numbers corresponding with the amount of variations that have a certain length.
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(30, 50)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(50, 100)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(100, 200)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(200, 300)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(300, 400)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(400, 500)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(500, 750)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(750, 1000)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(1000, 2000)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(2000, 5000)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(5000, 10000)]))
-    hg38_ins_distances.append(len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"] > 10000]))
-
+    hg38_ins_distances.extend(
+        [len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(start, end)]) for start, end in
+         [(30, 50), (50, 100), (100, 200), (200, 300), (300, 400), (400, 500), (500, 750), (750, 1000), (1000, 2000),
+          (2000, 5000), (5000, 10000)] + [(10000, float('inf'))]])
 
     # Separates the insertions from the hg38 file based on the length of the deletions and adds the length of the
     # subset into the list that will be used as values for the plot. So hg38_del_distances contains at the end 12
     # numbers corresponding with the amount of variations that have a certain length.
-    # The deletions dataframe only has one column, so the specifc dataframe doesn't need to be indicated.
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(30, 50)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(50, 100)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(100, 200)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(200, 300)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(300, 400)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(400, 500)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(500, 750)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(750, 1000)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(1000, 2000)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(2000, 5000)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions.between(5000, 10000)]))
-    hg38_del_distances.append(len(df_hg38_deletions_absolute[hg38_df_deletions > 10000]))
-
+    hg38_del_distances.extend(
+        [len(df_hg38_deletions_absolute[df_hg38_deletions_absolute.between(start, end)]) for start,
+        end in [(30, 50), (50, 100), (100, 200), (200, 300), (300, 400), (400, 500), (500, 750), (750, 1000),
+                (1000, 2000), (2000, 5000), (5000, 10000)] + [(10000, float('inf'))]])
     # ----------------------------------------------------------------------------------------------------
 
     # Separates the insertions from the t2t file based on the length of the insertions and adds the length of the
     # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
     # numbers corresponding with the amount of variations that have a certain length.
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(30, 50)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(50, 100)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(100, 200)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(200, 300)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(300, 400)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(400, 500)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(500, 750)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(750, 1000)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(1000, 2000)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(2000, 5000)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(5000, 10000)]))
-    t2t_ins_distances.append(len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"] > 10000]))
+
+    t2t_ins_distances.extend(
+        [len(df_t2t_insertions["LENGTH"][df_t2t_insertions["LENGTH"].between(start, end)]) for start, end in
+         [(30, 50), (50, 100), (100, 200), (200, 300), (300, 400), (400, 500), (500, 750), (750, 1000), (1000, 2000),
+          (2000, 5000), (5000, 10000)] + [(10000, float('inf'))]])
 
     # Separates the insertions from the t2t file based on the length of the deletions and adds the length of the
     # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
     # numbers corresponding with the amount of variations that have a certain length.
-    # The deletions dataframe only has one column, so the specifc dataframe doesn't need to be indicated.
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(30, 50)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(50, 100)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(100, 200)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(200, 300)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(300, 400)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(400, 500)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(500, 750)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(750, 1000)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(1000, 2000)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(2000, 5000)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(5000, 10000)]))
-    t2t_del_distances.append(len(t2t_df_deletions_absolute[t2t_df_deletions_absolute > 10000]))
+    t2t_del_distances.extend(
+        [len(t2t_df_deletions_absolute[t2t_df_deletions_absolute.between(start, end)]) for start, end in
+         [(30, 50), (50, 100), (100, 200), (200, 300), (300, 400), (400, 500), (500, 750), (750, 1000), (1000, 2000),
+          (2000, 5000), (5000, 10000)] + [(10000, float('inf'))]])
 
     # Gets the highest number of variants in a group from both the insertion and deletion dataframe. Then gets the
     # highest number between the two. T2T is the only one to be checked, because it has more reads on average.
