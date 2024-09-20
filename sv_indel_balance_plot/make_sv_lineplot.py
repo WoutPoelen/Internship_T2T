@@ -225,6 +225,9 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
         ax.tick_params(labelrotation=40, axis="x")
         ax.set_xlabel("Length")
 
+    # Saves the plot as the given file.
+    plt.savefig("SV_indel_comparison.jpg", bbox_inches="tight")
+
     # Shows the plots that were made.
     plt.show()
 

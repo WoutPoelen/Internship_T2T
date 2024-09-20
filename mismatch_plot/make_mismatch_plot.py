@@ -2,12 +2,24 @@ import os
 import bamnostic as bs  #bamnostic-1.1.10
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # C:\Users\Z659216\Desktop\BAM_files\P3-D10.aligned.HiFi.bam
 # C:\Users\Z659216\Desktop\BAM_files\P3-D10.haplotagged.bam
 
 def read_files():
-    """read the input files"""
+    """This function asks for two paths: one to the t2t bam file and one to the hg38 file of the same sample and
+    then adds the reads to list depending on which file the sample is from and then returns the lists.
+
+    Args:
+        No arguments
+
+    Returns:
+        hg38_reads(list): list of reads from the hg38 bam file.
+        t2t_reads(list): list of reads from the t2t bam file.
+    """
+
     t2t_reads = []
     hg38_reads = []
     input_path_t2t_bam = input("Give the path to the t2t BAM file: ")
@@ -19,8 +31,9 @@ def read_files():
         print(" ")
         # Opens the file and turns it into a pandas dataframe.
         with bs.AlignmentFile(input_path_t2t_bam, "rb") as bam_t2t:
-            for read in bam_t2t.head(n=20000):
+            for read in bam_t2t.head(n=50000):
                 t2t_reads.append(read)
+
         bam_t2t.close()
 
 
@@ -36,7 +49,7 @@ def read_files():
         print("Processing the reads")
         print(" ")
         with bs.AlignmentFile(input_path_hg38_bam, "rb") as bam_hg38:
-            for read in bam_hg38.head(n=20000):
+            for read in bam_hg38.head(n=50000):
                 hg38_reads.append(read)
         bam_hg38.close()
 
@@ -48,9 +61,23 @@ def read_files():
     return hg38_reads, t2t_reads
 
 def get_necessary_data(reads_hg38, reads_t2t):
-    """gets the alignment file and extracts the alignment length and the number of mismatches"""
+    """This function gets the lists with reads and searches per read for the NM tag (contains the number of mismatches)
+    and the length of the alignment part of the read. Then it calculates the mismatch rate by dividing the number of
+    mismatches by the length of the alignment part of the read. Returns the lists with the mismatches rates for the
+    two files.
+
+    Args:
+        reads_hg38 (list): list of reads from the hg38 bam file.
+        reads_t2t (list): list of reads from the t2t bam file.
+
+    Returns:
+        mismatch_rate_list_hg38(list): list of mismatches rates from the hg38 bam file.
+        mismatch_rate_list_t2t(list): list of mismatches rates from the t2t bam file.
+    """
+
     mismatch_rate_list_t2t = []
     mismatch_rate_list_hg38 = []
+
     for read in reads_hg38:
         mismatch_tag = read.get_tag("NM")
         if mismatch_tag is not None:
@@ -59,20 +86,30 @@ def get_necessary_data(reads_hg38, reads_t2t):
 
     for read in reads_t2t:
         mismatch_tag = read.get_tag("NM")
-
         if mismatch_tag is not None:
             mismatch_rate = mismatch_tag / read.query_alignment_length
             mismatch_rate_list_t2t.append(mismatch_rate)
 
+
     return mismatch_rate_list_hg38, mismatch_rate_list_t2t
 
 def plot_boxplot_comparison(mismatch_rate_hg38_list, mismatch_rate_t2t_list):
-    """gets the alignment length and the number of mismatches"""
+    """Uses the lists with mismatch rate to plot a violin plot. Use is for comparison between the two reference genomes.
+
+    Args:
+        mismatch_rate_t2t_list(list): list of mismatches rates from the t2t bam file.
+        mismatch_rate_hg38_list(list): list of mismatches rates from the hg38 bam file.
+    """
 
     df_mismatches = pd.DataFrame({"T2T": mismatch_rate_t2t_list, "HG38": mismatch_rate_hg38_list})
-    fig, ax = plt.subplots()
-    ax.boxplot(df_mismatches, tick_labels=df_mismatches.keys())
+    sns.set_style("darkgrid")
+    my_color = {"T2T": "blue", "HG38": "red"}
+    ax = sns.violinplot(df_mismatches, palette=my_color)
+    ax.set(ylabel="Mismatch Rate")
+    plt.yscale("log")
+    plt.savefig("mismatch_rate_comparison.jpg")
     plt.show()
+
 
 if __name__ == "__main__":
     hg38_reads, t2t_reads = read_files()
