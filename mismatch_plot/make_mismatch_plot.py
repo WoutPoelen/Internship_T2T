@@ -1,5 +1,6 @@
 import os
 import bamnostic as bs  #bamnostic-1.1.10
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -31,7 +32,7 @@ def read_files():
         print(" ")
         # Opens the file and turns it into a pandas dataframe.
         with bs.AlignmentFile(input_path_t2t_bam, "rb") as bam_t2t:
-            for read in bam_t2t.head(n=50000):
+            for read in bam_t2t.head(n=15000):
                 t2t_reads.append(read)
 
         bam_t2t.close()
@@ -41,7 +42,7 @@ def read_files():
     else:
         print("The specified path does NOT exist!")
 
-    input_path_hg38_bam = input("Give the path to the hg38 BAM file: ")
+    input_path_hg38_bam = input("Give the path to the GRCh38 BAM file: ")
     print("given path: " + input_path_hg38_bam)
 
     if os.path.exists(input_path_hg38_bam):
@@ -49,7 +50,7 @@ def read_files():
         print("Processing the reads")
         print(" ")
         with bs.AlignmentFile(input_path_hg38_bam, "rb") as bam_hg38:
-            for read in bam_hg38.head(n=50000):
+            for read in bam_hg38.head(n=15000):
                 hg38_reads.append(read)
         bam_hg38.close()
 
@@ -89,29 +90,35 @@ def get_necessary_data(reads_hg38, reads_t2t):
         if mismatch_tag is not None:
             mismatch_rate = mismatch_tag / read.query_alignment_length
             mismatch_rate_list_t2t.append(mismatch_rate)
+    mean_mismatch_hg38 = sum(mismatch_rate_list_hg38) / len(reads_hg38)
+    mean_mismatch_t2t = sum(mismatch_rate_list_t2t) / len(reads_t2t)
 
 
-    return mismatch_rate_list_hg38, mismatch_rate_list_t2t
+    return mean_mismatch_hg38, mean_mismatch_t2t
 
-def plot_boxplot_comparison(mismatch_rate_hg38_list, mismatch_rate_t2t_list):
+def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
     """Uses the lists with mismatch rate to plot a violin plot. Use is for comparison between the two reference genomes.
 
     Args:
         mismatch_rate_t2t_list(list): list of mismatches rates from the t2t bam file.
         mismatch_rate_hg38_list(list): list of mismatches rates from the hg38 bam file.
     """
+    dataframe_combined_mismatches = pd.DataFrame({"T2T": [mismatch_mean_t2t], "Hg38": [mismatch_mean_hg38]},
+                                                 columns=["T2T", "Hg38"])
+    fig, ax =plt.subplots(figsize=(5, 4))
 
-    df_mismatches = pd.DataFrame({"T2T": mismatch_rate_t2t_list, "HG38": mismatch_rate_hg38_list})
-    sns.set_style("darkgrid")
-    my_color = {"T2T": "blue", "HG38": "red"}
-    ax = sns.violinplot(df_mismatches, palette=my_color)
-    ax.set(ylabel="Mismatch Rate")
-    plt.yscale("log")
+    ax.scatter(x=dataframe_combined_mismatches.keys(), y=dataframe_combined_mismatches.values)
+    ax.set_xlim(-0.50, 1.50)
+    ax.set_ylim(0, 0.04)
+    ax.set_xticklabels(["T2T", "Hg38"])
+
+    plt.title("Average mismatch rate")
     plt.savefig("mismatch_rate_comparison.jpg")
+
     plt.show()
 
 
 if __name__ == "__main__":
     hg38_reads, t2t_reads = read_files()
-    mismatch_rate_list_hg38, mismatch_rate_list_t2t =get_necessary_data(hg38_reads, t2t_reads)
-    plot_boxplot_comparison(mismatch_rate_list_hg38, mismatch_rate_list_t2t)
+    mean_mismatch_hg38, mean_mismatch_t2t = get_necessary_data(hg38_reads, t2t_reads)
+    plot_boxplot_comparison(mean_mismatch_hg38, mean_mismatch_t2t)

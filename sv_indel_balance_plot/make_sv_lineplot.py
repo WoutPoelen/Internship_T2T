@@ -56,7 +56,7 @@ def get_hg38_sv():
     """
 
     # Asks for the input path for the hg38 sv file.
-    input_path_hg38 = input("Give the path to the hg38 sv file: ")
+    input_path_hg38 = input("Give the path to the GRCh38 sv file: ")
     print("given path: " + input_path_hg38)
 
     # Checks if there is a file in the file path
@@ -210,7 +210,7 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
 
     # Set the y-labels for both of the plots.
     ax1.set_ylabel("Number of variants in the CHM13")
-    ax2.set_ylabel("Number of variants in the Hg38")
+    ax2.set_ylabel("Number of variants in the GRCh38")
 
     # Setting the limit of the y_axis. Use the highest count from the previous function to have the limit change with
     # each dataset.
