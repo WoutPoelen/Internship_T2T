@@ -146,6 +146,7 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
     plt.savefig("mismatch_rate_comparison.jpg")
 
 
+
 if __name__ == "__main__":
     hg38_reads, t2t_reads = read_files()
     mean_mismatch_hg38, mean_mismatch_t2t = get_necessary_data(hg38_reads, t2t_reads)
