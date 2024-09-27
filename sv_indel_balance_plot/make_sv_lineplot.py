@@ -229,7 +229,7 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
     plt.savefig("SV_indel_comparison.jpg", bbox_inches="tight")
 
     # Shows the plots that were made.
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
