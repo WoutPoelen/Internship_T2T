@@ -116,7 +116,7 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
     plt.savefig("coverage_occurrences_histogram.jpg", bbox_inches="tight")
 
     # Makes sure the plot is shown
-    plt.show()
+    # plt.show()
 
 
 if __name__ == "__main__":
