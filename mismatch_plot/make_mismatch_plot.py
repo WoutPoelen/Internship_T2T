@@ -3,8 +3,6 @@ import bamnostic as bs
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-
 def read_files():
     """
     This function asks for two paths: one to the t2t bam file and one to the hg38 file of the same sample and
@@ -61,8 +59,6 @@ def read_files():
     else:
         print("The specified path does NOT exist!")
 
-
-
     return hg38_reads, t2t_reads
 
 def get_necessary_data(reads_hg38, reads_t2t):
@@ -110,7 +106,6 @@ def get_necessary_data(reads_hg38, reads_t2t):
     mean_mismatch_hg38 = sum(mismatch_rate_list_hg38) / len(reads_hg38)
     mean_mismatch_t2t = sum(mismatch_rate_list_t2t) / len(reads_t2t)
 
-
     return mean_mismatch_hg38, mean_mismatch_t2t
 
 def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
@@ -149,8 +144,6 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
 
     # Saves the figure in a jpg file
     plt.savefig("mismatch_rate_comparison.jpg")
-
-    plt.show()
 
 
 if __name__ == "__main__":
