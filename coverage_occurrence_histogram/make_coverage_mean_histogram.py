@@ -98,6 +98,7 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
     :return:
         saves the plot as coverage_occurrences_histogram.jpg.
     """
+    # Makes the plotting work on the server
     matplotlib.use("Agg")
 
     # Makes a histogram with each file having a different color, automated length of values on the x-axis (bins),
@@ -118,7 +119,8 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
     # Saves the figure in a file
     plt.savefig("coverage_occurrences_histogram.jpg", bbox_inches="tight")
 
-    # Makes sure the plot is shown
+    # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
+    # when you want to see the file outside the server
     # plt.show()
 
 

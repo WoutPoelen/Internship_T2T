@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+import matplotlib
 
 def get_t2t_sv():
     """This function reads the t2t sv file and turns it into a dataframe. Checks if the row is an insertion of deletion
@@ -179,6 +180,9 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
         nothing
     """
 
+    # Makes the plotting work on the server
+    matplotlib.use("Agg")
+
     # List with the different groups of indel lengths. Used for the x-axis.
     lengths = ["30-50", "50-100 ", "100-200", "200-300", "300-400", "400-500", "500-750", "750-1k", "1k-2k", "2k-5k",
                "5k-10k", "10k+"]
@@ -228,7 +232,8 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
     # Saves the plot as the given file.
     plt.savefig("SV_indel_comparison.jpg", bbox_inches="tight")
 
-    # Shows the plots that were made.
+    # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
+    # when you want to see the file outside the server
     # plt.show()
 
 

@@ -2,6 +2,7 @@ import os
 import bamnostic as bs
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
 
 def read_files():
     """
@@ -121,6 +122,8 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
     Returns:
         saves the plot as mismatch_rate_comparison.jpg.
     """
+    matplotlib.use("Agg")
+
     # Makes a dataframe containing the average mismatches of the files.
     dataframe_combined_mismatches = pd.DataFrame({"T2T": [mismatch_mean_t2t], "Hg38": [mismatch_mean_hg38]},
                                                  columns=["T2T", "Hg38"])
@@ -145,6 +148,9 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
     # Saves the figure in a jpg file
     plt.savefig("mismatch_rate_comparison.jpg")
 
+    # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
+    # when you want to see the file outside the server
+    # plt.show()
 
 
 if __name__ == "__main__":
