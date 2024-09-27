@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
+import matplotlib
 
 def open_file():
     """
@@ -97,6 +98,8 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
     :return:
         saves the plot as coverage_occurrences_histogram.jpg.
     """
+    matplotlib.use("Agg")
+
     # Makes a histogram with each file having a different color, automated length of values on the x-axis (bins),
     # a label for the legend, a different alpha value and histtype to make the histograms easier to differentiate
     plt.hist(occurrences_coverage_t2t, color="blue", bins="auto", label="T2T", alpha=0.5, histtype="step")
