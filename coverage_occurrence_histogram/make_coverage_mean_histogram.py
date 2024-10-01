@@ -54,6 +54,11 @@ def open_file():
     hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
     t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
 
+    hg38_dataframe = hg38_dataframe[(hg38_dataframe["End"] <= 5000000) & (hg38_dataframe["Chromosome"] == "chr1")]
+    t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1")]
+
+    print(hg38_dataframe)
+    print(t2t_dataframe)
 
     return t2t_dataframe, hg38_dataframe
 
@@ -82,6 +87,7 @@ def Counting_the_coverage(dataframe_t2t, dataframe_hg38):
     coverage_occurences_t2t = Counter(mean_coverage_t2t)
     coverage_occurences_hg38 = Counter(mean_coverage_hg38)
 
+    print(coverage_occurences_t2t)
     return coverage_occurences_t2t, coverage_occurences_hg38
 
 
