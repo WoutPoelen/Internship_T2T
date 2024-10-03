@@ -1,5 +1,4 @@
 import argparse
-import os
 import bamnostic as bs
 import pandas as pd
 import matplotlib.pyplot as plt
