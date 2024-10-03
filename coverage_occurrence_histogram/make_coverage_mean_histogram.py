@@ -10,9 +10,9 @@ def open_file(argument):
     the bash file.
 
     :param:
-        argument.T2T_BED_file (BED file): BED file containing the average coverage of the 500 bp regions from the t2t
+        argument.T2T_gz_file (gz file): gz file containing the average coverage of the 500 bp regions from the t2t
         genome.
-        argument.GRCh38_BED_file (BED file): BED file containing the average coverage of the 500 bp regions from the GRCh38
+        argument.GRCh38_gz_file (gz file): gz file containing the average coverage of the 500 bp regions from the GRCh38
         genome.
 
     :return:
@@ -24,8 +24,8 @@ def open_file(argument):
     print("Reading the files")
 
     # Unzips with gzip and turns the files given by the user into dataframes
-    t2t_dataframe = pd.read_csv(argument.T2T_BED_file, sep="\t", compression="gzip", encoding="utf-8")
-    hg38_dataframe = pd.read_csv(argument.GRCh38_BED_file, sep="\t", compression="gzip", encoding="utf-8")
+    t2t_dataframe = pd.read_csv(argument.T2T_gz_file, sep="\t", compression="gzip", encoding="utf-8")
+    hg38_dataframe = pd.read_csv(argument.GRCh38_gz_file, sep="\t", compression="gzip", encoding="utf-8")
 
     # Sets the column names for the dataframe.
     hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
@@ -119,13 +119,15 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("T2T_BED_file",
-                        help="Path to the filtered BED file from process_regions_file.py containing "
-                             "the regions of 500 bp and their average coverage from the T2T file",
-                        metavar="the T2T input BED file")
-    parser.add_argument("GRCh38_BED_file",
-                        help="Path to the filtered BED file from process_regions_file.py containing the regions "
-                             "of 500 bp and the average coverage from the GRCh38 file",
-                        metavar="the GRCh38 input BED file")
+    parser.add_argument("T2T_gz_file",
+                        help="Path to the GZ file containing the regions of 500 bp and their average coverage "
+                             "from the T2T file",
+                        metavar="the T2T input gz file")
+
+    parser.add_argument("GRCh38_gz_file",
+                        help="Path to the GZ file containing the regions of 500 bp and their average coverage "
+                             "from the GRCh38 file",
+                        metavar="the GRCh38 input gz file")
+
     args = parser.parse_args()
     main(args)
