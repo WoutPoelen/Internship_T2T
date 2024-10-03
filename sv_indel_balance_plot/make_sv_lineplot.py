@@ -1,100 +1,56 @@
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
 import matplotlib
 
-def get_t2t_sv():
+def open_sv_files(arguments):
     """This function reads the t2t sv file and turns it into a dataframe. Checks if the row is an insertion of deletion
      depending on the length of the variation and makes the length of the deletions absolute.
 
-     Args:
-        no arguments
+     :param:
+        argument.T2T_filtered_txt_file (txt file): text file with the Structural Variants (sv) from the sample mapped
+        to the T2T reference genome.
+        argument.GRCh38_filtered_txt_file (txt file): text file with the Structural Variants (sv) from the sample mapped
+        to the GRCh38 (Hg38) reference genome.
 
-     Returns:
-        df_t2t_insertions (pandas dataframe): dataframe containing insertions from the t2t file
-        df_t2t_deletions (pandas dataframe): dataframe containing deletions from the t2t file
+     :return:
+        df_t2t_insertions (pandas dataframe): dataframe containing insertions from the t2t file.
+        df_t2t_deletions_absolute (pandas dataframe): dataframe containing deletions from the t2t file in absolute
+        format.
+        df_hg38_insertions (pandas dataframe): dataframe containing insertions from the hg38 file.
+        df_hg38_deletions_absolute (pandas dataframe): dataframe containing deletions from the hg38 file in absolute
+        format.
     """
+    # Opens the argument files and makes them into dataframes
+    t2t_dataframe = pd.read_csv(arguments.T2T_filtered_txt_file, sep=" ", encoding="utf-8")
+    hg38_dataframe = pd.read_csv(arguments.GRCh38_filtered_txt_file, sep=" ", encoding="utf-8")
 
-    # Asks for the input path for the t2t sv file.
-    input_path_t2t = input("Give the path to the t2t sv file: ")
-    print("given path: " + input_path_t2t)
-
-    # Checks if there is a file in the file path
-    if os.path.exists(input_path_t2t):
-        print("File exists")
-        print(" ")
-        # Opens the file and turns it into a pandas dataframe.
-        with open(input_path_t2t, "r", encoding="utf-8") as f:
-            df_t2t_combined = pd.read_csv(f, sep=" ")
-
-    # Prints the string if the file path doesn't exist
-    else:
-        print("The specified path does NOT exist!")
-
-    # Gives the column names to the dataframe.
-    df_t2t_combined.columns = ["CHROM", "POS", "FILTER", "GT", "LENGTH"]
+    # Gives the column names to the dataframe
+    t2t_dataframe.columns = ["CHROM", "POS", "FILTER", "GT", "LENGTH"]
+    hg38_dataframe.columns = ["CHROM", "POS", "FILTER", "GT", "LENGTH"]
 
     # Separates the insertions and deletions by looking at the lengths if the indels (positive length means insertion
-    # negative length means deletions).
-    df_t2t_insertions = df_t2t_combined[df_t2t_combined["LENGTH"] > 0]
-    df_t2t_deletions = df_t2t_combined[df_t2t_combined["LENGTH"] < 0]
+    # negative length means deletions)
+    df_t2t_insertions = t2t_dataframe[t2t_dataframe["LENGTH"] > 0]
+    df_t2t_deletions = t2t_dataframe[t2t_dataframe["LENGTH"] < 0]
+
+    df_hg38_insertions = hg38_dataframe[hg38_dataframe["LENGTH"] > 0]
+    df_hg38_deletions = hg38_dataframe[hg38_dataframe["LENGTH"] < 0]
 
     # Turns the length of the deletions absolute
     df_t2t_deletions_absolute = df_t2t_deletions["LENGTH"].abs()
-
-    return df_t2t_insertions, df_t2t_deletions_absolute
-
-def get_hg38_sv():
-    """This function reads the hg38 sv file and turns it into a dataframe. Checks if the row is an insertion of deletion
-     depending on the length of the variation and makes the length of the deletions absolute.
-
-     Args:
-        no arguments
-
-     Returns:
-        df_hg38_insertions (dataframe): dataframe containing insertions from the Hg38 file
-        df_hg38_deletions (dataframe): dataframe containing deletions from the Hg38 file
-    """
-
-    # Asks for the input path for the hg38 sv file.
-    input_path_hg38 = input("Give the path to the GRCh38 sv file: ")
-    print("given path: " + input_path_hg38)
-
-    # Checks if there is a file in the file path
-    if os.path.exists(input_path_hg38):
-        print("File exists")
-        print(" ")
-        # Opens the file and turns it into a pandas dataframe.
-        with open(input_path_hg38, "r", encoding="utf-8") as f:
-            df_hg38_combined = pd.read_csv(f, sep=" ")
-
-    # Prints the string if the file path doesn't exist
-    else:
-        print("The specified path does NOT exist!")
-
-    # Gives the column names to the dataframe.
-    df_hg38_combined.columns = ["CHROM", "POS", "FILTER", "GT", "LENGTH"]
-
-    # Separates the insertions and deletions by looking at the lengths if the indels (positive length means insertion
-    # negative length means deletions).
-    df_hg38_insertions = df_hg38_combined[df_hg38_combined["LENGTH"] > 0]
-    df_hg38_deletions = df_hg38_combined[df_hg38_combined["LENGTH"] < 0]
-
-    # Turns the length of the deletions absolute
     df_hg38_deletions_absolute = df_hg38_deletions["LENGTH"].abs()
 
-
-    return df_hg38_insertions, df_hg38_deletions_absolute
+    return df_t2t_insertions, df_t2t_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute
 
 
 def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions,
-                            hg38_df_deletions):
-
+                            df_hg38_deletions_absolute):
     """
     This functions gets the dataframes with insertions or deletions from both the t2t and hg38 reference genome.
     It then goes through the dataframes and gets the amount of variations whose length is in between certain lengths.
 
-    Args:
+    :param:
         df_t2t_insertions (dataframe): dataframe containing insertions from the t2t file.
         t2t_df_deletions_absolute (dataframe): dataframe containing deletions whose length has been made absolute
         from the t2t file.
@@ -111,16 +67,13 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
         hg38_del_distances (list): list with the amount of deletions from the hg38 file whose length is in between
         certain lengths.
         highest_count (int): the highest count of variations in compared to the groups.
-
     """
 
     # Creates empty lists that will be used for the lengths of the into group separated variations.
     hg38_ins_distances = []
     hg38_del_distances = []
-    # Creates empty lists that will be used for the lengths of the into group separated variations.
     t2t_ins_distances = []
     t2t_del_distances = []
-
 
     # Separates the insertions from the hg38 file based on the length of the insertions and adds the length of the
     # subset into the list that will be used as values for the plot. So hg38_ins_distances contains at the end 12
@@ -188,11 +141,11 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
                "5k-10k", "10k+"]
 
     # Sets the font size for the plots.
-    plt.rcParams.update({'font.size': 5.75})
+    # plt.rcParams.update({'font.size': 5.75})
 
     # Indicates that two plots (ax1, ax2) will be made, that they will be next to each other (2 columns) and that
     # they share the same y-axis.
-    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(10,8))
 
     # The titles for the two plots. In a dictionary that is later given to a for loop that sets everything up.
     titles = {ax1: "SV indel balance (CHM13)", ax2: "SV indel balance (GRCh38)"}
@@ -230,17 +183,27 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
         ax.set_xlabel("Length")
 
     # Saves the plot as the given file.
-    plt.savefig("SV_indel_comparison.jpg", bbox_inches="tight")
+    plt.savefig("SV_indel_comparison.png", bbox_inches="tight")
 
+    print("The plot is successfully generated and saved in SV_indel_comparison.png")
     # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
     # when you want to see the file outside the server
     # plt.show()
 
-
-if __name__ == '__main__':
-    df_t2t_insertions, t2t_df_deletions_absolute = get_t2t_sv()
-    df_hg38_insertions, df_hg38_deletions_absolute = get_hg38_sv()
+def main(args):
+    df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute = open_sv_files(args)
     t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count = (
         get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions,
                                 df_hg38_deletions_absolute))
     plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("T2T_filtered_txt_file",
+                        help="Path to the filtered BED file from process_regions_file.py containing "
+                             "the regions of 500 bp and the average coverage lower than 10 from the T2T file")
+    parser.add_argument("GRCh38_filtered_txt_file",
+                        help="Path to the filtered BED file from process_regions_file.py containing the regions "
+                             "of 500 bp and the average coverage lower than 10 from the GRCh38 file")
+    args = parser.parse_args()
+    main(args)
