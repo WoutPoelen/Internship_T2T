@@ -6,6 +6,7 @@
       - [Comparing SV indel balance](#SVcomparing)
       - [Comparing mismatch rate](#Mismatch)
       - [Comparing average coverage](#Coverage)
+      - [Comparing low coverage regions](#Low_coverage)
 
 
 ## Introduction <a name="introduction"></a>
@@ -55,4 +56,17 @@ python make_coverage_mean_histogram.py T2T.bed.gz GRCh38.bed.gz
 ```
 5. The file coverage_occurrences_histogram.png contains the histogram.
 
+### Comparing the regions with low coverage <a name="Low_coverage"></a>
 
+Follow these steps to compare the regions with low coverage between the two reference genomes:
+1. Run the [process_regions_file.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/sv_indel_balance_plot/get_amount_indels_from_file.sh) python script with the two regions.bed.gz files made in step two of comparing average coverage. The output files contain the regions with average coverage below or equal to 10.
+```
+python process_regions_file.py t2t_regions.bed.gz GRCh38_gz_file output_T2T.bed output_GRCh38.bed
+```
+
+2. Lift the coordinates of the low average regions in the just gotten output_T2T.bed over to the GRCh38 reference genome with your preferred liftover tool. This results in a bed file containing the coordinates for the low average coverage regions on the GRCh38 reference genome.
+3. Run the [comparing_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/comparing_low_coverage_regions.py) python script with the input being the T2T.bed, GRCh38.bed and T2T_to_GRCh38.bed.
+```
+python comparing_low_coverage_regions.py T2T_BED_file GRCh38_BED_file Liftover_BED_file
+```
+4. The file low_coverage_comparison.png contains the scatterplot.
