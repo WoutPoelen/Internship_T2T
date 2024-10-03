@@ -1,6 +1,4 @@
 import argparse
-import gzip
-import os
 import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
@@ -12,9 +10,9 @@ def open_file(argument):
     the bash file.
 
     :param:
-        args.T2T_BED_file (BED file): BED file containing the average coverage of the 500 bp regions from the t2t
+        argument.T2T_BED_file (BED file): BED file containing the average coverage of the 500 bp regions from the t2t
         genome.
-        args.GRCh38_BED_file (BED file): BED file containing the average coverage of the 500 bp regions from the GRCh38
+        argument.GRCh38_BED_file (BED file): BED file containing the average coverage of the 500 bp regions from the GRCh38
         genome.
 
     :return:
@@ -23,8 +21,9 @@ def open_file(argument):
          hg38_dataframe(dataframe: a dataframe that contains the chromosome, start and end of the region.
          Tt also has the coverage of the regions from the hg38 bed file.
     """
+    print("Reading the files")
 
-
+    # Unzips with gzip and turns the files given by the user into dataframes
     t2t_dataframe = pd.read_csv(argument.T2T_BED_file, sep="\t", compression="gzip", encoding="utf-8")
     hg38_dataframe = pd.read_csv(argument.GRCh38_BED_file, sep="\t", compression="gzip", encoding="utf-8")
 
@@ -32,6 +31,9 @@ def open_file(argument):
     hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
     t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
 
+    print("Processing files")
+
+    # Filters the dataframes to get the first 5mbp of the first chromosome. Get rid of this if this isn't necessary
     hg38_dataframe = hg38_dataframe[(hg38_dataframe["End"] <= 5000000) & (hg38_dataframe["Chromosome"] == "chr1")]
     t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1")]
 
@@ -59,11 +61,13 @@ def Counting_the_coverage(dataframe_t2t, dataframe_hg38):
     mean_coverage_t2t = dataframe_t2t["mean_coverage"].tolist()
     mean_coverage_hg38 = dataframe_hg38["mean_coverage"].tolist()
 
-    # Calculates amount of times an amount of mean coverage in the files.
-    coverage_occurences_t2t = Counter(mean_coverage_t2t)
-    coverage_occurences_hg38 = Counter(mean_coverage_hg38)
+    print("Calculating average coverage occurrences")
 
-    return coverage_occurences_t2t, coverage_occurences_hg38
+    # Calculates amount of times an amount of mean coverage in the files.
+    coverage_occurrences_t2t = Counter(mean_coverage_t2t)
+    coverage_occurrences_hg38 = Counter(mean_coverage_hg38)
+
+    return coverage_occurrences_t2t, coverage_occurrences_hg38
 
 
 def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
@@ -82,6 +86,8 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
     # Makes the plotting work on the server
     matplotlib.use("Agg")
 
+    print("Generating the plot")
+
     # Makes a histogram with each file having a different color, automated length of values on the x-axis (bins),
     # a label for the legend, a different alpha value and histtype to make the histograms easier to differentiate
     plt.hist(occurrences_coverage_t2t, color="blue", bins="auto", label="T2T", alpha=0.5, histtype="step")
@@ -99,6 +105,8 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
 
     # Saves the figure in a file
     plt.savefig("coverage_occurrences_histogram.png", bbox_inches="tight")
+
+    print("The average coverage histogram has been generated and is saved as coverage_occurrences_histogram.png.")
 
     # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
     # when you want to see the file outside the server
