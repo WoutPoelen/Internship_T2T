@@ -59,7 +59,7 @@ python make_coverage_mean_histogram.py T2T.bed.gz GRCh38.bed.gz
 ### Comparing the regions with low coverage <a name="Low_coverage"></a>
 
 Follow these steps to compare the regions with low coverage between the two reference genomes:
-1. Run the [process_regions_file.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/sv_indel_balance_plot/get_amount_indels_from_file.sh) python script with the two regions.bed.gz files made in step two of comparing average coverage. The output files contain the regions with average coverage below or equal to 10.
+1. Run the [process_regions_file.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/process_regions_file.py) python script with the two regions.bed.gz files made in step two of comparing average coverage. The output files contain the regions with average coverage below or equal to 10.
 ```
 python process_regions_file.py t2t_regions.bed.gz GRCh38_gz_file output_T2T.bed output_GRCh38.bed
 ```
