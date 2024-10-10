@@ -115,7 +115,8 @@ def making_barplot(t2t_count_values, grch38_count_values):
     # Give an x-value to the bar plots, so the bar plots won't stack on top of each other when added or subtracted from
     x = np.arange(len(categories))
 
-    # matplotlib.use("Agg")
+    # Makes matplotlib work on the server.
+    matplotlib.use("Agg")
 
     # Makes subplots
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -140,7 +141,8 @@ def making_barplot(t2t_count_values, grch38_count_values):
     # Saves the figure as the following png file
     plt.savefig("low_coverage_categories_barplot.png")
 
-    plt.show()
+    # Shows the plot. Get rid of comment if run in pycharm
+    # plt.show()
 
 
 def main(args):
