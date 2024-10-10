@@ -107,9 +107,7 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
 
     colors = ["blue", "red"]
     # Makes a dataframe containing the average mismatches of the files.
-    dataframe_combined_mismatches = pd.DataFrame = pd.DataFrame({"T2T": [mismatch_mean_t2t],
-                                                                 "Hg38": [mismatch_mean_hg38]
-                                                                 })
+    dataframe_combined_mismatches = pd.DataFrame({"T2T": [mismatch_mean_t2t], "Hg38": [mismatch_mean_hg38]})
 
 
     # Sets the figure up with the width and height
@@ -137,7 +135,7 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
 
     # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
     # when you want to see the file outside the server
-    # plt.show()
+    # plt.show()éee
 
 def main(args):
     hg38_reads, t2t_reads = read_files(args)
@@ -145,7 +143,10 @@ def main(args):
     plot_boxplot_comparison(mean_mismatch_hg38, mean_mismatch_t2t)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Gets the BAM files from the reference genomes (T2T, then GRCh38) "
+                                                 "and calculates the amount of mismatches by dividing the obtained"
+                                                 "number of mismatches by the length of the aligned read. "
+                                                 "Then plots the average mismatch rate per reference genome.")
     parser.add_argument("T2T_BAM_file",
                         help="Path to the BAM file of the sample that is mapped to T2T",
                         metavar="the T2T input BAM file")

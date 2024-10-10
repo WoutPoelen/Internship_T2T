@@ -198,12 +198,16 @@ def main(args):
     plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Gets the txt files from get_amount_indels_from_file.sh containing the"
+                                                 " structural variations from their respective reference genome. Then"
+                                                 "calculates the amount of insertions and deletions in the reference"
+                                                 "genomes and plots it in a line plot.")
     parser.add_argument("T2T_filtered_txt_file",
-                        help="Path to the filtered BED file from process_regions_file.py containing "
-                             "the regions of 500 bp and the average coverage lower than 10 from the T2T file")
+                        help="Path to the txt file from the get_amount_indels_from_file.sh containing the indels from"
+                             "T2T-CHM13")
     parser.add_argument("GRCh38_filtered_txt_file",
-                        help="Path to the filtered BED file from process_regions_file.py containing the regions "
-                             "of 500 bp and the average coverage lower than 10 from the GRCh38 file")
+                        help="Path to the txt file from the get_amount_indels_from_file.sh containing the indels from "
+                             "GRCh38")
+
     args = parser.parse_args()
     main(args)
