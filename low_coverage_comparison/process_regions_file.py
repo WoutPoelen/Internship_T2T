@@ -94,3 +94,13 @@ if __name__ == "__main__":
                         metavar="GRCh38 BED output file")
     args = parser.parse_args()
     main(args)
+
+
+# Alternative aproach:
+
+#!/bin/bash
+# set -euo pipefail
+#IN_GZ=$1
+#OUT_BED=$2
+# zcat ${IN_GZ} | awk '{FS="\t"; OFS="\t"} (($3 < 500000) && ($1 == 'chr1')) {print $1,$2,$3,$5(?or which ever has the depth)}' > ${OUT_BED}
+
