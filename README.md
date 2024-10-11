@@ -77,15 +77,16 @@ Follow these steps to get the scatterplot in which the amount of times a low cov
 1. Obtain the hg38.ncbiRefSeq.gtf file [link](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/), a bed file with structural duplications and a gz file with the centromeres.
 2. run the [make_low_coverage_categories_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/make_low_coverage_categories_file.sh) bash file like the following example:
 ```
-bash make_low_coverage_categories_file.sh hg38.ncbiRefSeq.gtf hg38_segmental_duplications centromeres.txt.gz ouput_CDS_bed_file output_transcript_bed_file output_centromeres_bed_file T2T_low_coverage_regions.bed GRCh38_low_coverage regions.bed T2T_output.bed GRCh38_output.bed
-```   
-2. Open the [low_coverage regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories.py) python script, change the following line to the appropriate failed liftover value and save the change:
+bash make_low_coverage_categories_file.sh hg38.ncbiRefSeq.gtf hg38_segmental_duplications.bed centromeres.txt.gz ouput_CDS_bed_file output_transcript_bed_file output_centromeres_bed_file T2T_low_coverage_regions.bed GRCh38_low_coverage regions.bed T2T_output.bed GRCh38_output.bed
+```
+Make sure the database is for all the input samples the same (RefSeq for example).
+3. Open the [low_coverage regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories.py) python script, change the following line to the appropriate failed liftover value and save the change:
 ```
 t2t_count_values_dict["Failed liftover"] = 207089
 ```
-3. run the python like the following code example:
+4. run the python like the following code example:
 ```
 python script intersected_T2T_liftover.bed intersected_GRCh38.bed
 ```
-bash /ifs/home/wout/PycharmProjects/Internship_T2T/low_coverage_comparison/make_low_coverage_categories_file.sh hg38.ncbiRefSeq.gtf hg38_segmental_duplications.bed centromeres.txt.gz test_bash_CDS test_bash_transcript test_bash_centromeres /ifs/data/research/projects/wout/projects/wp1_depth/data/BAMs_T2T_P3-D10/T2T_entire_genome_low_coverage.bed /ifs/data/research/projects/wout/projects/wp1_depth/data/BAMs_GRCh38_P3-D10/GRCh38_entire_genome_P3-D10_low_coverage.bed test_bash_T2T test_bash_GRCh38
+5. The scatterplot is saves as low_coverage_categories_barplot.png
 
