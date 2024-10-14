@@ -7,6 +7,7 @@
       - [Comparing mismatch rate](#Mismatch)
       - [Comparing average coverage](#Coverage)
       - [Comparing low coverage regions](#Low_coverage)
+      - [Comparing difficult regions with the low coverage regions](#)
 
 
 ## Introduction <a name="introduction"></a>
@@ -47,7 +48,7 @@ Follow these steps to make the histogram showing the difference in average cover
 1. Get the same BAM files as used for the mismatch rate if using the same sample as used in that step is desired. Otherwise use BAM files from another sample that has BAM file from both reference genomes.
 2. Run the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) bash script with first the name of the prefix (name that will be given to sub output file), second the input BAM file and the name of the output file. Do this once with the T2T BAM file as input file and once with the GRCh38 as input file and change the prefix, so the same one won't be used twice. Following example is for the T2T bam file:
 ```
-python get_coverage_mean_regions.sh name_t2t_prefix T2T.bam
+python get_coverage_mean_regions.sh T2T.bam name_prefix
 ```
 3. Get the (name_prefix).regions.bed.gz file. This file contains the average coverage per region of 500 base pairs. One regions.bed.gz file for the T2T and GRCh38 genomes.
 4. Run the [make_coverage_mean_histogram.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/make_coverage_mean_histogram.py) python script following the example:
@@ -58,15 +59,34 @@ python make_coverage_mean_histogram.py T2T.bed.gz GRCh38.bed.gz
 
 ### Comparing the regions with low coverage <a name="Low_coverage"></a>
 
-Follow these steps to compare the regions with low coverage between the two reference genomes:
-1. Run the [process_regions_file.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/process_regions_file.py) python script with the two regions.bed.gz files made in step two of comparing average coverage. The output files contain the regions with average coverage below or equal to 10.
+Follow these steps to compare the regions with low coverage between the two reference genomes in the first 5 mega base pairs of chromosome 1:
+1. Run the [get_low_coverage_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/get_low_coverage_regions.sh) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
 ```
-python process_regions_file.py t2t_regions.bed.gz GRCh38_gz_file output_T2T.bed output_GRCh38.bed
+bash get_low_coverage_regions.sh T2T_regions.bed.gz T2T_low_coverage_regions.bed GRCh38_regions.bed.gz GRCh38_low_coverage_regions.bed
 ```
-
 2. Lift the coordinates of the low average regions in the just gotten output_T2T.bed over to the GRCh38 reference genome with your preferred liftover tool. This results in a bed file containing the coordinates for the low average coverage regions on the GRCh38 reference genome.
 3. Run the [comparing_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/comparing_low_coverage_regions.py) python script with the input being the T2T.bed, GRCh38.bed and T2T_to_GRCh38.bed.
 ```
 python comparing_low_coverage_regions.py T2T_BED_file GRCh38_BED_file Liftover_BED_file
 ```
 4. The file low_coverage_comparison.png contains the scatterplot.
+
+### Comparing overlapping difficult regions with the low coverage regions <a name="category"></a>
+
+Follow these steps to get the scatterplot in which the amount of times a low coverage region overlaps with a centromere, transcript, coding sequence (CDS) and/or structural duplication. These steps are written with the assumption that step 1 and 2 of comparing low coverage regions has already been done and the files have been made.
+1. Obtain the hg38.ncbiRefSeq.gtf file [link](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/), a bed file with structural duplications and a gz file with the centromeres.
+2. run the [make_low_coverage_categories_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/make_low_coverage_categories_file.sh) bash file like the following example:
+```
+bash make_low_coverage_categories_file.sh hg38.ncbiRefSeq.gtf hg38_segmental_duplications.bed centromeres.txt.gz ouput_CDS_bed_file output_transcript_bed_file output_centromeres_bed_file T2T_low_coverage_regions.bed GRCh38_low_coverage regions.bed T2T_output.bed GRCh38_output.bed
+```
+Make sure the database is for all the input samples the same (RefSeq for example).
+3. Open the [low_coverage regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories.py) python script, change the following line to the appropriate failed liftover value and save the change:
+```
+t2t_count_values_dict["Failed liftover"] = 207089
+```
+4. run the python like the following code example:
+```
+python script intersected_T2T_liftover.bed intersected_GRCh38.bed
+```
+5. The scatterplot is saves as low_coverage_categories_barplot.png
+
