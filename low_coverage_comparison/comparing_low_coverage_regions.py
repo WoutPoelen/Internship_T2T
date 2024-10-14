@@ -45,6 +45,8 @@ def generate_dataframes(argument):
                                     (hg38_dataframe["mean_coverage"] <= 10)]
     t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1") &
                                   (t2t_dataframe["mean_coverage"] <= 10)]
+    liftover_dataframe = liftover_dataframe[(liftover_dataframe["End"] <= 5000000) & (liftover_dataframe["Chromosome"] == "chr1") &
+                                    (liftover_dataframe["mean_coverage"] <= 10)]
 
     return t2t_dataframe, hg38_dataframe, liftover_dataframe
 
