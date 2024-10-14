@@ -14,6 +14,13 @@ GRCH38_LOW_COVERAGE_INPUT_FILE=$8
 T2T_LOW_COVERAGE_CATEGORICAL_FILE=$9
 GRCH38_LOW_COVERAGE_CATEGORICAL_FILE=${10}
 
+if [ "$#" -ne 10 ];
+  then
+    echo "Usage: hg38.ncbiRefSeq.gtf segmental_duplication.bed centromeres.txt.gz ouput_CDS_bed_file
+    output_transcript.bed output_centromeres.bed T2T_low_coverage_regions.bed GRCh38_low_coverage regions.bed
+    T2T_output.bed GRCh38_output.bed "
+fi
+
 # Processes the Coding sequence file to get the chromosome and start/end location
 grep CDS $GENES_INPUT_FILE | cut -f 1,4,5 > $CDS_OUTPUT_FILE
 echo $GENES_INPUT_FILE " has been processed and the CDS output is made and sent to " $CDS_OUTPUT_FILE
