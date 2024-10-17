@@ -27,7 +27,7 @@ def getting_argument(argument):
     GRCh38_dataframe = pd.read_csv(argument.intersected_bed_file_GRCh38, sep="\t", encoding="utf-8")
 
     # Add column names to the dataframes
-    t2t_liftover_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Liftover_score", "Category", "Count"]
+    t2t_liftover_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
     GRCh38_dataframe.columns = ["Chromosome", "Start", "End", "Coverage", "Category", "Count"]
 
     # Turn the amount of times the region overlaps with a difficult category binary. However, some regions would have
@@ -39,7 +39,7 @@ def getting_argument(argument):
 
 def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
     """
-    This function recieves the two dataframes from the getting arguments function and gets the regions where nothing
+    This function receives the two dataframes from the getting arguments function and gets the regions where nothing
     overlaps. Afterward it gets the total amount of times regions overlap with one of the difficult categories.
 
     :param:
@@ -82,8 +82,9 @@ def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
     t2t_count_values_dict["no overlap"] = total_no_overlaps_T2T
     grch38_count_values_dict["no overlap"] = total_no_overlaps_GRCh38
 
-    t2t_count_values_dict["Failed liftover"] = 207089
-    grch38_count_values_dict["Failed liftover"] = 0
+    # Hardcoded failed liftover value. Change this to the appropriate value
+    # t2t_count_values_dict["Failed liftover"] = 207089
+    # grch38_count_values_dict["Failed liftover"] = 0
 
     return t2t_count_values_dict, grch38_count_values_dict
 
@@ -109,8 +110,8 @@ def making_barplot(t2t_count_values, grch38_count_values):
 
     # Makes a list of the values of the dictionaries by going to the T2T key and looping through the categories and
     # getting their values
-    t2t_values_dictionary = [complete_dictionary["T2T"][category] for category in categories]
-    grch38_values_dictionary = [complete_dictionary["GRCh38"][category] for category in categories]
+    t2t_values_list = [complete_dictionary["T2T"][category] for category in categories]
+    grch38_values_list = [complete_dictionary["GRCh38"][category] for category in categories]
 
     # Give an x-value to the bar plots, so the bar plots won't stack on top of each other when added or subtracted from
     x = np.arange(len(categories))
@@ -123,8 +124,8 @@ def making_barplot(t2t_count_values, grch38_count_values):
 
     # Generates the barplots with the x-value depending on the reference genome
     # SD is first so its x-value is 0 and for t2t it's -0.2 and grch38 is 0.2.
-    ax.bar(x - 0.2, t2t_values_dictionary, width=0.4, label = "T2T", color = "blue")
-    ax.bar(x + 0.2, grch38_values_dictionary, width=0.4, label = "GRCh38", color = "green")
+    ax.bar(x - 0.2, t2t_values_list, width=0.4, label = "T2T", color = "blue")
+    ax.bar(x + 0.2, grch38_values_list, width=0.4, label = "GRCh38", color = "green")
 
     # Set the locations of the category names
     ax.set_xticks(x)
