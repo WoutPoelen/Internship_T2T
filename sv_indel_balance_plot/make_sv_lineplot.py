@@ -41,8 +41,42 @@ def open_sv_files(arguments):
     df_t2t_deletions_absolute = df_t2t_deletions["LENGTH"].abs()
     df_hg38_deletions_absolute = df_hg38_deletions["LENGTH"].abs()
 
-    return df_t2t_insertions, df_t2t_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute
 
+    # Removing the indels that are lower than 30.
+    df_t2t_insertions = df_t2t_insertions[df_t2t_insertions["LENGTH"] >= 30]
+    df_hg38_insertions = df_hg38_insertions[df_hg38_insertions["LENGTH"] >= 30]
+    df_t2t_deletions_absolute = df_t2t_deletions_absolute[df_t2t_deletions_absolute >= 30]
+    df_hg38_deletions_absolute = df_hg38_deletions_absolute[df_hg38_deletions_absolute >= 30]
+
+    return df_t2t_insertions, df_t2t_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute,
+
+
+def getting_total_indels(df_t2t_insertions, df_t2t_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute):
+    """
+    This functions gets the total number of insertions and deletions from the t2t file and the hg38 file by obtaining
+    the shape of the dataframe and getting the number of rows.
+
+    :param:
+        df_t2t_insertions (pandas dataframe): dataframe containing insertions from the t2t file.
+        df_t2t_deletions_absolute (pandas dataframe): dataframe containing deletions from the t2t file in absolute
+        format.
+        df_hg38_insertions (pandas dataframe): dataframe containing insertions from the hg38 file.
+        df_hg38_deletions_absolute (pandas dataframe): dataframe containing deletions from the hg38 file in absolute
+        format.
+
+    :return:
+        total_t2t_insertions (int): total number of insertions in the T2T reference genome.
+        total_t2t_deletions (int): total number of deletions in the T2T reference genome.
+        total_hg38_insertions (int): total number of insertions in the hg38 reference genome.
+        total_hg38_deletions (int): total number of deletions in the hg38 reference genome.
+    """
+    # Gets the total number of a certain indel from the reference genomes and returns them for the barplot
+    total_t2t_insertions = df_t2t_insertions.shape[0]
+    total_t2t_deletions = df_t2t_deletions_absolute.shape[0]
+    total_hg38_insertions = df_hg38_insertions.shape[0]
+    total_hg38_deletions = df_hg38_deletions_absolute.shape[0]
+
+    return total_t2t_insertions, total_t2t_deletions, total_hg38_insertions, total_hg38_deletions
 
 def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions,
                             df_hg38_deletions_absolute):
@@ -57,7 +91,7 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
         df_hg38_insertions (dataframe): dataframe containing insertions from the hg38 file.
         hg38_df_deletions (dataframe): dataframe containing deletions from the hg38 file.
 
-    Returns:
+    :return:
         t2t_ins_distance (list): list with the amount of insertions from the t2t file whose length is in between certain
         lengths.
         t2t_del_distances (list): list with the amount of deletions from the t2t file whose length is in between certain
@@ -81,7 +115,7 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
     hg38_ins_distances.extend(
         [len(df_hg38_insertions["LENGTH"][df_hg38_insertions["LENGTH"].between(start, end)]) for start, end in
          [(30, 50), (50, 100), (100, 200), (200, 300), (300, 400), (400, 500), (500, 750), (750, 1000), (1000, 2000),
-          (2000, 5000), (5000, 10000)] + [(10000, float('inf'))]])
+          (2000, 5000), (5000, 10000)] +  [(10000, float('inf'))]])
 
     # Separates the insertions from the hg38 file based on the length of the deletions and adds the length of the
     # subset into the list that will be used as values for the plot. So hg38_del_distances contains at the end 12
@@ -116,21 +150,22 @@ def get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg3
     max_insertions = max(t2t_ins_distances)
     highest_count = max(max_deletions, max_insertions)
 
+
     return t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count
 
 
-def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count):
+def plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count):
     """This function plots one figure containing two different plots. The first plot has the indels balance with the
     CHM13 reference genome and the second plot has the indel balance with the Hg38 reference genome.
 
-    Args:
+    :param:
         t2t_ins_distances (list): list of the lengths of the insertions found with the t2t reference genome.
         t2t_del_distances (list): list of the lengths of the deletions found with the t2t reference genome.
         hg38_ins_distances (list): list of the lengths of the insertions found with the hg38 reference genome.
         hg38_del_distances (list): list of the lengths of the deletions found with the hg38 reference genome.
 
-    Returns:
-        nothing
+    :return:
+        a line plot as SV_indel_comparison.png
     """
 
     # Makes the plotting work on the server
@@ -185,17 +220,80 @@ def plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_dist
     # Saves the plot as the given file.
     plt.savefig("SV_indel_comparison.png", bbox_inches="tight")
 
-    print("The plot is successfully generated and saved in SV_indel_comparison.png")
+    print("The line plot is successfully generated and saved in SV_indel_comparison.png")
+    # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
+    # when you want to see the file outside the server
+    # plt.show()
+
+def make_total_barplot(total_t2t_insertions, total_t2t_deletions, total_hg38_insertions, total_hg38_deletions):
+    """
+    The function gets the total number of insertions and deletions per reference genome and makes a barplot with those
+    numbers.
+
+    :param:
+        df_t2t_insertions (pandas dataframe): dataframe containing insertions from the t2t file.
+        df_t2t_deletions_absolute (pandas dataframe): dataframe containing deletions from the t2t file in absolute
+        format.
+        df_hg38_insertions (pandas dataframe): dataframe containing insertions from the hg38 file.
+        df_hg38_deletions_absolute (pandas dataframe): dataframe containing deletions from the hg38 file in absolute
+        format.
+
+    :return:
+        a barplot comparing the total number of indels saved as Total_indel_comparison.png
+    """
+
+    # Makes sure the plot can be saved on the server
+    matplotlib.use("Agg")
+
+    # Indicates that two plots (ax1, ax2) will be made, that they will be next to each other (2 columns) and that
+    # they share the same y-axis.
+    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(8, 6))
+
+    # The titles for the two plots. In a dictionary that is later given to a for loop that sets everything up.
+    titles = {ax1: "Total SV (CHM13)", ax2: "Total SV (GRCh38)"}
+    x_labels = {ax1: "T2T-CHM13", ax2: "GRCh38"}
+
+    # To return the current active axes. Used to set extra things for the plots up.
+    ax = plt.gca()
+
+    ax1.bar("DEL", total_t2t_deletions, width=0.5, color="red")
+    ax1.bar("INS", total_t2t_insertions, width=0.5, color="blue")
+
+    ax2.bar("DEL", total_hg38_deletions, width=0.5, color="red")
+    ax2.bar("INS", total_hg38_insertions, width=0.5, color="blue")
+
+    # Set the y-labels for both of the plots.
+    ax1.set_ylabel("Total number of variants in the T2T-CHM13")
+    ax2.set_ylabel("Total number of variants in the GRCh38")
+
+    # Loops through both of the plots and adds the following things the plots: the title corresponding with the plot
+    # from the dictionary, a legend, a grid, rotated the x-values 40 degrees and the x-label
+    for ax in [ax1, ax2]:
+        ax.set_title(titles[ax])
+        ax.set_xlabel(x_labels[ax])
+
+    # Saves the plot as the given file.
+    plt.savefig("Total_indel_comparison.png", bbox_inches="tight")
+
+    print("the barplot is successfully generated and saved as Total_indel_comparison.png")
+
     # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
     # when you want to see the file outside the server
     # plt.show()
 
 def main(args):
     df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute = open_sv_files(args)
+
+    total_t2t_insertions, total_t2t_deletions, total_hg38_insertions, total_hg38_deletions = \
+        getting_total_indels(df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions, df_hg38_deletions_absolute)
+
     t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count = (
         get_and_compare_lengths(df_t2t_insertions, t2t_df_deletions_absolute, df_hg38_insertions,
                                 df_hg38_deletions_absolute))
-    plot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count)
+
+    plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38_del_distances, highest_count)
+
+    make_total_barplot(total_t2t_insertions, total_t2t_deletions, total_hg38_insertions, total_hg38_deletions)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Gets the txt files from get_amount_indels_from_file.sh containing the"
@@ -208,6 +306,5 @@ if __name__ == '__main__':
     parser.add_argument("GRCh38_filtered_txt_file",
                         help="Path to the txt file from the get_amount_indels_from_file.sh containing the indels from "
                              "GRCh38")
-
     args = parser.parse_args()
     main(args)
