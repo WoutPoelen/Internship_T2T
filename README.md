@@ -20,7 +20,7 @@ Over the years, several reference genomes for genomic analysis on humans have be
 
 ### Comparing SV indel balance <a name="SVcomparing"></a>
 
-Follow these steps to make the lineplot showing the difference in SV indel balance between the GRCh38 and the T2T reference genomes:
+Follow these steps to make a lineplot showing the difference in indel balance between the GRCh38 and the T2T reference genomes and a barplot showing the difference in total amount of insertions and deletions between the reference genomes:
 1. Go to the server where the VCF files that you want to plot are located (one from the Hg38 reference genome and one from the T2T reference genome).
 2. Run the [get_amount_indels_from_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/sv_indel_balance_plot/get_amount_indels_from_file.sh) bash script with first the input VCF file and then the output file. Do this for both the T2T and GRCh38 VCF files. Following example is for the T2T VCF file:
 ```
@@ -31,6 +31,7 @@ bash get_amount_indels_from_file.sh T2T.vcf T2T_svs.txt
 python make_sv_lineplot.py t2t_sv.txt GRCh38_sv.txt
 ```
 4. The file SV_indel_comparison.png contains the line plot.
+5. The file Total_indel_comparison.png contains the barplot.
 
 ### Comparing the mismatch rate <a name="Mismatch"></a>
 
