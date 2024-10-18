@@ -26,6 +26,8 @@ def getting_argument(argument):
     t2t_liftover_dataframe = pd.read_csv(argument.intersected_bed_file_T2T_liftover, sep="\t", encoding="utf-8")
     GRCh38_dataframe = pd.read_csv(argument.intersected_bed_file_GRCh38, sep="\t", encoding="utf-8")
 
+    print("Reading the files")
+
     # Add column names to the dataframes
     t2t_liftover_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
     GRCh38_dataframe.columns = ["Chromosome", "Start", "End", "Coverage", "Category", "Count"]
@@ -55,6 +57,7 @@ def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
         grch38_count_values_dict (dictionary): dictionary containing the total amount of times regions overlap with one
         (or more) of the difficult categories or none of the regions. These regions are from the grch38 genome.
     """
+    print("Counting overlaps")
 
     # Groups the dataframe by Start location of the region and the Count to check if the same start location has
     # zero overlap with the categories
@@ -101,7 +104,8 @@ def making_barplot(t2t_count_values, grch38_count_values):
     :return:
         The plot is saved in low_coverage_categories_barplot.png
     """
-
+    print("Generating barplot")
+    
     # Combines the two dictionaries to make it easier to plot the grouped barplot
     complete_dictionary = {"T2T": t2t_count_values, "GRCh38": grch38_count_values}
 
@@ -129,6 +133,9 @@ def making_barplot(t2t_count_values, grch38_count_values):
 
     # Set the locations of the category names
     ax.set_xticks(x)
+
+    # If a limit on the y_axis is necessary. Remove the comment
+    # ax.set_ylim(0, 180000)
 
     # Set the categories as labels beneath the bars
     ax.set_xticklabels(categories)
