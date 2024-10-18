@@ -11,16 +11,6 @@ CENTROMERES_SORTED_OUTPUT_FILE=$6
 T2T_LOW_COVERAGE_INPUT_FILE=$7
 T2T_LOW_COVERAGE_CATEGORICAL_FILE=$8
 
-#bash /ifs/home/wout/PycharmProjects/Internship_T2T/low_coverage_comparison/make_low_coverage_categories_t2t.sh
-# /ifs/data/research/projects/wout/projects/wp1_depth/data/P3-D10_sample/low_coverage_bed_categorical_P3-D10/T2T_categories_files/converted_genomic_data_T2T.gtf
-# sds_merged.bed
-# filtered_centromeres_CenSat.bed
-# test_CDS_output.bed
-# test_transcript_output.bed
-# test_centromeres.bed
-# /ifs/data/research/projects/wout/projects/wp1_depth/data/P3-D10_sample/BAMs_T2T_P3-D10/fix_T2T_entire_genome_low_coverage.bed
-# T2T_test_categorical.bed
-
 if [ "$#" -ne 8 ];
   then
     echo "Usage: genes_t2t_file.gtf segmental_duplication.bed filtered_centromeres.bed ouput_CDS_bed_file
