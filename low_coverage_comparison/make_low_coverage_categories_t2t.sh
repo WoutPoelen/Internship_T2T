@@ -13,9 +13,7 @@ T2T_LOW_COVERAGE_CATEGORICAL_FILE=$8
 
 if [ "$#" -ne 8 ];
   then
-    echo "Usage: genes_t2t_file.gtf segmental_duplication.bed filtered_centromeres.bed ouput_CDS_bed_file
-    output_transcript.bed output_centromeres.bed T2T_low_coverage_regions.bed
-    T2T_output.bed "
+    echo "Usage: genes_t2t_file.gtf segmental_duplication.bed filtered_centromeres.bed ouput_CDS_bed_file output_transcript.bed output_centromeres.bed T2T_low_coverage_regions.bed T2T_output.bed "
 fi
 
 # Processes the Coding sequence file to get the chromosome and start/end location
