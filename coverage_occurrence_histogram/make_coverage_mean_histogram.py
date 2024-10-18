@@ -165,7 +165,9 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
     plt.title("Standard deviation of the mean coverage")
     plt.legend()
 
-    print("The scatterplot has been succesfully generated and saved as")
+    plt.savefig("standard_deviation_coverage.png", bbox_inches="tight")
+
+    print("The scatterplot has been succesfully generated and saved as standard_deviation_coverage")
 
     # plt.show()
 
