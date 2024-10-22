@@ -158,7 +158,6 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
 
     # Sets a limit to the x-axis and y-axis and the label for the y-axis
     ax.set_xlim(-0.5, 1.5)
-    ax.set_ylim(0, standard_deviation_hg38.max()*1.1)
     ax.set_ylabel("Coverage standard deviation")
 
     # Sets the title and legend up
