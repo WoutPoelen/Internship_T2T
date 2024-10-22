@@ -18,6 +18,6 @@ zcat "$T2T_GENOME_REGIONS_INPUT_FILE" | awk -v median_t2t="$T2T_median" '{FS="\t
 echo "$T2T_GENOME_REGIONS_INPUT_FILE has been processed and the output has been send to $T2T_LOW_COVERAGE_REGIONS_OUTPUT"
 
 # Processes the from Mosdepth obtained GRCh38 gz file and gets the regions which have a average coverage lower than the median divided by 3
-zcat "$GRCh38_GENOME_REGIONS_INPUT" | awk -v median_hg38="$GRCh38_median"'{FS="\t";OFS="\t"} ($4 < (median / 3)) {print $1,$2,$3,$4}' > "$GRCh38_LOW_COVERAGE_REGION_OUTPUT"
+zcat "$GRCh38_GENOME_REGIONS_INPUT" | awk -v median_hg38="$GRCh38_median"'{FS="\t";OFS="\t"} ($4 < (median_hg38 / 3)) {print $1,$2,$3,$4}' > "$GRCh38_LOW_COVERAGE_REGION_OUTPUT"
 echo "$GRCh38_GENOME_REGIONS_INPUT has been processed and the output has been send to $GRCh38_LOW_COVERAGE_REGION_OUTPUT"
 
