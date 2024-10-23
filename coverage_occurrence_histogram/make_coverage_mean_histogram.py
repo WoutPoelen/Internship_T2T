@@ -31,6 +31,11 @@ def open_file(argument):
     hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
     t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
 
+    t2t_standard_deviation = t2t_dataframe["mean_coverage"].std()
+    hg38_standard_deviation = hg38_dataframe["mean_coverage"].std()
+
+    print(t2t_standard_deviation)
+    print(hg38_standard_deviation)
     print("Processing files")
 
     # Filters the dataframes to get the first 5mbp of the first chromosome. Get rid of this if this isn't necessary
@@ -38,7 +43,7 @@ def open_file(argument):
     t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1")]
 
 
-    return t2t_dataframe, hg38_dataframe
+    return t2t_dataframe, hg38_dataframe, t2t_standard_deviation, hg38_standard_deviation
 
 def Counting_the_coverage(dataframe_t2t, dataframe_hg38):
     """
@@ -69,14 +74,6 @@ def Counting_the_coverage(dataframe_t2t, dataframe_hg38):
     coverage_occurrences_hg38 = Counter(mean_coverage_hg38)
 
     return coverage_occurrences_t2t, coverage_occurrences_hg38
-
-def calculating_standard_deviation(dataframe_t2t, dataframe_hg38):
-
-    t2t_standard_deviation = dataframe_t2t["mean_coverage"].std()
-    hg38_standard_deviation = dataframe_hg38["mean_coverage"].std()
-
-
-    return t2t_standard_deviation, hg38_standard_deviation
 
 
 def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
@@ -172,9 +169,8 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
 
 
 def main(args):
-    t2t_dataframe, hg38_dataframe = open_file(args)
+    t2t_dataframe, hg38_dataframe, t2t_standard_deviation, hg38_standard_deviation = open_file(args)
     coverage_occurences_t2t, coverage_occurences_hg38 = Counting_the_coverage(t2t_dataframe, hg38_dataframe)
-    t2t_standard_deviation, hg38_standard_deviation = calculating_standard_deviation(t2t_dataframe, hg38_dataframe)
     make_histogram(coverage_occurences_t2t, coverage_occurences_hg38)
     plot_standard_deviation(t2t_standard_deviation, hg38_standard_deviation)
 
