@@ -41,12 +41,10 @@ def generate_dataframes(argument):
     print("Processing the files")
 
     # Filters the pandas frames to only contain the first 5mbp of chromosome 1 and a coverage below 1
-    hg38_dataframe = hg38_dataframe[(hg38_dataframe["End"] <= 5000000) & (hg38_dataframe["Chromosome"] == "chr1") &
-                                    (hg38_dataframe["mean_coverage"] <= 10)]
-    t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1") &
-                                  (t2t_dataframe["mean_coverage"] <= 10)]
-    liftover_dataframe = liftover_dataframe[(liftover_dataframe["End"] <= 5000000) & (liftover_dataframe["Chromosome"] == "chr1") &
-                                    (liftover_dataframe["mean_coverage"] <= 10)]
+    hg38_dataframe = hg38_dataframe[(hg38_dataframe["End"] <= 5000000) & (hg38_dataframe["Chromosome"] == "chr1")]
+    t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1")]
+    liftover_dataframe = liftover_dataframe[(liftover_dataframe["End"] <= 5000000) &
+                                            (liftover_dataframe["Chromosome"] == "chr1")]
 
     return t2t_dataframe, hg38_dataframe, liftover_dataframe
 
