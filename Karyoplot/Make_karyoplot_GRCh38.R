@@ -1,13 +1,11 @@
 library(karyoploteR)
-library(GenomicRanges)
+
 
 args <- commandArgs(trailingOnly = TRUE)
 
 file_path_GRCh38_low_coverage <- args[1]
 
-bed_data <- read.table(file_path_GRCh38_low_coverage, header = FALSE, sep = "\t",
-                       stringAsFactors = FALSE)
-
+bed_data <- read.table(file_path_GRCh38_low_coverage, header = FALSE, sep = "\t")
 
 colnames(bed_data) <- c("chromosome", "start", "end", "mean_coverage")
 
@@ -24,7 +22,7 @@ plot_params$leftmargin <- 0.06
 plot_params$ideogramlateralmargin <- 0.05
 plot_params$data.panel.margin <- 0.1
 
-kp_GRCh38 <- plotKaryotype(genome = custom_genome,plot.type = 1, 
+kp_GRCh38 <- plotKaryotype(genome = "hg38",plot.type = 1, 
                         chromosomes = "all", plot.params = plot_params)
 kpAddBaseNumbers(kp_GRCh38)
 kpPlotDensity(kp_GRCh38, data=data_GRCh38, data.panel = 1, window.size = 5000, 
