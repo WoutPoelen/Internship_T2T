@@ -1,21 +1,18 @@
 library(karyoploteR)
+library(GenomicRanges)
 
+data_T2T <- toGRanges(data.frame(chr=fix_T2T_entire_genome_low_coverage["V1"], 
+                             start=fix_T2T_entire_genome_low_coverage["V2"], 
+                             end=fix_T2T_entire_genome_low_coverage["V3"],
+                             y=fix_T2T_entire_genome_low_coverage["V4"]))
 
-args <- commandArgs(trailingOnly = TRUE)
+custom_genome <- toGRanges(data.frame(chr=chromosome_report_t2t$UCSC.style.name,
+                                    start=0, 
+                                    end=chromosome_report_t2t$Seq.length))
 
-file_path_GRCh38_low_coverage <- args[1]
-path_to_plot <- args[2]
-
-png(path_to_plot)
-
-bed_data <- read.table(file_path_GRCh38_low_coverage, header = FALSE, sep = "\t")
-
-colnames(bed_data) <- c("chromosome", "start", "end", "mean_coverage")
-
-data_GRCh38 <- toGRanges(data.frame(chr = bed_data$chromosome, 
-                                 start = bed_data$start, 
-                                 end = bed_data$end,
-                                 y = bed_data$mean_coverage))
+custom_cytobands <- toGRanges(data.frame(chr=filtered_centromeres_CenSat$V1,
+                                         start=filtered_centromeres_CenSat$V2,
+                                         end=filtered_centromeres_CenSat$V3))
 
 plot_params <- getDefaultPlotParams(plot.type = 1)
 
@@ -25,12 +22,12 @@ plot_params$leftmargin <- 0.06
 plot_params$ideogramlateralmargin <- 0.05
 plot_params$data.panel.margin <- 0.1
 
-kp_GRCh38 <- plotKaryotype(genome = "hg38",plot.type = 1, 
+kp_t2t <- plotKaryotype(genome = custom_genome,plot.type = 1, 
                         chromosomes = "all", plot.params = plot_params)
-kpAddBaseNumbers(kp_GRCh38)
-kpPlotDensity(kp_GRCh38, data=data_GRCh38, data.panel = 1, window.size = 5000, 
+kpAddBaseNumbers(kp_t2t)
+kpPlotRegions(kp_t2t, data = custom_cytobands, data.panel = "ideogram", 
+              col = "red")
+kpPlotDensity(kp_t2t, data=data_T2T, data.panel = 1, window.size = 5000, 
               col="black")
-kpAddMainTitle(kp_GRCh38, "Low coverage regions GRCh38", col="black")
-
-def.off()
+kpAddMainTitle(kp_t2t, "Low coverage regions T2T-CHM13", col="black")
 
