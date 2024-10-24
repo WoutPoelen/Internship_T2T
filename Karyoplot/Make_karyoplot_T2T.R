@@ -6,15 +6,15 @@ args <- commandArgs(trailingOnly = TRUE)
 file_path_t2t_low_coverage <- args[1]
 chromosome_locations <- args[2]
 centromeres_locations <- args[3]
+path_to_plot <- args[4]
 
-bed_data <- read.table(file_path_t2t_low_coverage, header = FALSE, sep = "\t",
-                       stringAsFactors = FALSE)
+png(path_to_plot)
 
-chromosomes <- read.table(chromosome_locations, header = TRUE, sep = "\t",
-                          stringAsFactors = FALSE)
+bed_data <- read.table(file_path_t2t_low_coverage, header = FALSE, sep = "\t")
 
-centromeres <- read.table(centromeres_locations, header = FALSE, sep = "\t",
-                          stringAsFactors = FALSE)
+chromosomes <- read.table(chromosome_locations, header = TRUE, sep = "\t")
+
+centromeres <- read.table(centromeres_locations, header = FALSE, sep = "\t")
 
 colnames(bed_data) <- c("chromosome", "start", "end", "mean_coverage")
 colnames(centromeres) <- c("chromosome", "start", "end") 
@@ -49,3 +49,4 @@ kpPlotDensity(kp_t2t, data=data_T2T, data.panel = 1, window.size = 5000,
               col="black")
 kpAddMainTitle(kp_t2t, "Low coverage regions T2T-CHM13", col="black")
 
+dev.off()

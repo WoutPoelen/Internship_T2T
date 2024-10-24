@@ -4,6 +4,9 @@ library(karyoploteR)
 args <- commandArgs(trailingOnly = TRUE)
 
 file_path_GRCh38_low_coverage <- args[1]
+path_to_plot <- args[2]
+
+png(path_to_plot)
 
 bed_data <- read.table(file_path_GRCh38_low_coverage, header = FALSE, sep = "\t")
 
@@ -28,4 +31,6 @@ kpAddBaseNumbers(kp_GRCh38)
 kpPlotDensity(kp_GRCh38, data=data_GRCh38, data.panel = 1, window.size = 5000, 
               col="black")
 kpAddMainTitle(kp_GRCh38, "Low coverage regions GRCh38", col="black")
+
+def.off()
 
