@@ -185,7 +185,7 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
     # Sets the figure up with the width and height
     fig, ax = plt.subplots()
 
-    # Creates a scatter plot with the name of the reference genomes in the x-axis and the average mismatch rates in
+    # Creates a scatter plot with the name of the reference genomes on the x-axis and the standard deviation on
     # the y-axis in the figure
     ax.scatter(x="GRCh38",y= standard_deviation_hg38, color="blue", label="GRCh38")
     ax.scatter(x = "T2T", y = standard_deviation_t2t, color="green", label="T2T" )

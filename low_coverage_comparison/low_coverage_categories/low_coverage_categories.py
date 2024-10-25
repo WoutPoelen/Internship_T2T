@@ -6,54 +6,52 @@ import matplotlib
 
 def getting_argument(argument):
     """
-    This function recieves two BED files with the amount of times the low coverage regions from their respective
+    This function receives two BED files with the amount of times the low coverage regions from their respective
     reference genome overlap with centromeres, transcripts, coding sequences (CDS) and sequential duplications (SD).
+
     :param:
-        argument.intersected_bed_file_T2T_liftover (bed file): bed file containing the T2T to GRCh38 lifted over
+        argument.intersected_bed_file_T2T (bed file): bed file containing the T2T to GRCh38 lifted over
         low coverage regions the amount of times it overlaps with a centromere, transcript, coding sequence and
         sequential duplication.
-
         argument.intersected_bed_file_GRCh38 (bed file): bed file containing the low coverage regions and the amount of
         times it overlaps with a centromere, transcript, coding sequence and sequential duplication.
-    :return:
-        t2t_liftover_dataframe (dataframe): dataframe containing the low coverage regions who could be lifted over from
-        T2T to GRCh38.
 
+    :return:
+        t2t_dataframe (dataframe): dataframe containing the low coverage regions who could be lifted over from
+        T2T to GRCh38.
         GRCh38_dataframe (dataframe): dataframe containing the low coverage regions from the GRCh38 genome.
     """
-
     # Open the arguments given bed files and make dataframes from them
-    t2t_liftover_dataframe = pd.read_csv(argument.intersected_bed_file_T2T_liftover, sep="\t", encoding="utf-8")
+    t2t_dataframe = pd.read_csv(argument.intersected_bed_file_T2T, sep="\t", encoding="utf-8")
     GRCh38_dataframe = pd.read_csv(argument.intersected_bed_file_GRCh38, sep="\t", encoding="utf-8")
 
     print("Reading the files")
 
     # Add column names to the dataframes
-    t2t_liftover_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
+    t2t_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
     GRCh38_dataframe.columns = ["Chromosome", "Start", "End", "Coverage", "Category", "Count"]
 
-    # Turn the amount of times the region overlaps with a difficult category binary. However, some regions would have
-    # 7 exomes and that isn't the purpose of this script.
-    t2t_liftover_dataframe.loc[t2t_liftover_dataframe["Count"] > 1, "Count"] = 1
+    # Turn the amount of times the region overlaps with a difficult category binary. Because, some regions would have
+    # 7 exomes and that isn't in line with the question that this script tries to answer:
+    # with what do these low coverage overlap. Not with how many
+    t2t_dataframe.loc[t2t_dataframe["Count"] > 1, "Count"] = 1
     GRCh38_dataframe.loc[GRCh38_dataframe["Count"] > 1, "Count"] = 1
 
-    return t2t_liftover_dataframe, GRCh38_dataframe
+    return t2t_dataframe, GRCh38_dataframe
 
-def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
+def counting_total(t2t_dataframe, dataframe_GRCh38):
     """
     This function receives the two dataframes from the getting arguments function and gets the regions where nothing
-    overlaps. Afterward it gets the total amount of times regions overlap with one of the difficult categories.
+    overlaps. It then calculates the total number of times regions overlap with any of the difficult categories.
 
     :param:
         liftover_t2t_dataframe (dataframe): dataframe containing the low coverage regions who could be lifted over from
         T2T to GRCh38.
-
         GRCh38_dataframe (dataframe): dataframe containing the low coverage regions from the GRCh38 genome.
 
     :return:
         t2t_count_values_dict (dictionary): dictionary containing the total amount of times regions overlap with one (or
         more) of the difficult categories or none of the regions. These regions are lifted over from t2t to grch38.
-
         grch38_count_values_dict (dictionary): dictionary containing the total amount of times regions overlap with one
         (or more) of the difficult categories or none of the regions. These regions are from the grch38 genome.
     """
@@ -61,7 +59,7 @@ def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
 
     # Groups the dataframe by Start location of the region and the Count to check if the same start location has
     # zero overlap with the categories
-    zero_count_per_start_t2t = liftover_t2t_dataframe.groupby('Start')['Count'].apply(lambda x: (x == 0).all())
+    zero_count_per_start_t2t = t2t_dataframe.groupby('Start')['Count'].apply(lambda x: (x == 0).all())
     zero_count_per_start_grch38 = dataframe_GRCh38.groupby('Start')['Count'].apply(lambda x: (x == 0).all())
 
     # Get the 'Start' positions where all counts are zero and turns it into a list
@@ -74,7 +72,7 @@ def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
 
     # Group the DataFrame by "Category" and sum the "Count" column to get the amount of regions that overlap with the
     # categories
-    t2t_count_values = liftover_t2t_dataframe.groupby("Category")["Count"].sum()
+    t2t_count_values = t2t_dataframe.groupby("Category")["Count"].sum()
     grch38_count_values = dataframe_GRCh38.groupby("Category")["Count"].sum()
 
     # Converts the dataframes into dictionaries a
@@ -85,10 +83,6 @@ def counting_total(liftover_t2t_dataframe, dataframe_GRCh38):
     t2t_count_values_dict["no overlap"] = total_no_overlaps_T2T
     grch38_count_values_dict["no overlap"] = total_no_overlaps_GRCh38
 
-    # Hardcoded failed liftover value. Change this to the appropriate value
-    # t2t_count_values_dict["Failed liftover"] = 207089
-    # grch38_count_values_dict["Failed liftover"] = 0
-
     return t2t_count_values_dict, grch38_count_values_dict
 
 def making_barplot(t2t_count_values, grch38_count_values):
@@ -96,11 +90,13 @@ def making_barplot(t2t_count_values, grch38_count_values):
     This functions recieves the dictionaries from counting total function and combines them into one dictionary.
     Then makes a list with the category names and gets the values in list form from their respective dictionary and
     reference genome. The lists with keys and values get plotted into a barplot.
+
     :param:
         t2t_count_values_dict (dictionary): dictionary containing the total amount of times regions overlap with one (or
         more) of the difficult categories or none of the regions. These regions are lifted over from t2t to grch38.
         grch38_count_values_dict (dictionary): dictionary containing the total amount of times regions overlap with one
         (or more) of the difficult categories or none of the regions. These regions are from the grch38 genome.
+
     :return:
         The plot is saved in low_coverage_categories_barplot.png
     """
@@ -154,8 +150,8 @@ def making_barplot(t2t_count_values, grch38_count_values):
 
 
 def main(args):
-    t2t_liftover_dataframe, GRCh38_dataframe = getting_argument(args)
-    t2t_count_values_dict, grch38_count_values_dict = (counting_total(t2t_liftover_dataframe, GRCh38_dataframe))
+    t2t_dataframe, GRCh38_dataframe = getting_argument(args)
+    t2t_count_values_dict, grch38_count_values_dict = (counting_total(t2t_dataframe, GRCh38_dataframe))
     making_barplot(t2t_count_values_dict, grch38_count_values_dict)
 
 
@@ -165,8 +161,8 @@ if __name__ == "__main__":
                                                  "coding sequences and centromeres) and counts the total amount of "
                                                  "times regions overlap with the categories. "
                                                  "Plots those amounts in a bar plot")
-    parser.add_argument("intersected_bed_file_T2T_liftover",
-                        help="Path to the liftover (t2t to GRCh38) bed file containing the amount of categories a "
+    parser.add_argument("intersected_bed_file_T2T",
+                        help="Path to the T2T bed file containing the amount of categories a "
                              "region overlaps with",
                         metavar="Intersected bed file from the T2T to GRCh38 liftover")
     parser.add_argument("intersected_bed_file_GRCh38",

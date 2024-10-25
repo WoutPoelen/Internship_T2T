@@ -11,6 +11,7 @@ CENTROMERES_SORTED_OUTPUT_FILE=$6
 GRCH38_LOW_COVERAGE_INPUT_FILE=$7
 GRCH38_LOW_COVERAGE_CATEGORICAL_FILE=$8
 
+# Checks if there are actually 8 files given. Prints the usage if that is not the case.
 if [ "$#" -ne 8 ];
   then
     echo "Usage: genes_GRCh38_file.gtf segmental_duplication.bed centromeres.txt.gz ouput_CDS_bed_file.bed output_transcript.bed output_centromeres.bed T2T_low_coverage_regions.bed T2T_output.bed "

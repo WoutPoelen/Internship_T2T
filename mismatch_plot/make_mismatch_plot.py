@@ -9,10 +9,11 @@ def read_files(arguments):
     This function asks for two paths: one to the t2t bam file and one to the hg38 file of the same sample and
     then adds the reads to list depending on which file the sample is from and then returns the lists.
 
-    Args:
-        No arguments
+    :param:
+        arguments.T2T_BAM_file: Path to the BAM file of the sample that is mapped to T2T
+        arguments.hg38_BAM_file: Path to the BAM file of the sample that is mapped to GRCh38
 
-    Returns:
+    :return:
         hg38_reads(list): list of reads from the hg38 bam file.
         t2t_reads(list): list of reads from the t2t bam file.
     """
@@ -45,11 +46,11 @@ def get_necessary_data(reads_hg38, reads_t2t):
     mismatches by the length of the alignment part of the read. Returns the lists with the mismatches rates for the
     two files.
 
-    Args:
+    :param:
         reads_hg38 (list): list of reads from the hg38 bam file.
         reads_t2t (list): list of reads from the t2t bam file.
 
-    Returns:
+    :returns:
         mean_mismatch_hg38(float): the average of the mismatch rate across the entire file. Calculated by dividing the
         sum of mismatches by the length of the list with reads.
         mean_mismatch_t2t(float): the average of the mismatch rate across the entire file. Calculated by dividing the
@@ -91,13 +92,13 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
     """
     Uses the lists with mismatch rate to plot a violin plot. Use is for comparison between the two reference genomes.
 
-    Args:
+    :param:
         mismatch_mean_hg38(float): the average of the mismatch rate across the entire file. Calculated by dividing the
         sum of mismatches by the length of the list with reads.
         mismatch_mean_t2t(float): the average of the mismatch rate across the entire file. Calculated by dividing the
         sum of mismatches by the length of the list with reads.
 
-    Returns:
+    :return:
         saves the plot as mismatch_rate_comparison.jpg.
     """
 
@@ -113,7 +114,7 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
     # Sets the figure up with the width and height
     fig, ax =plt.subplots(figsize=(5, 4))
 
-    # Creates a scatter plot with the name of the reference genomes in the x-axis and the average mismatch rates in
+    # Creates a scatter plot with the name of the reference genomes on the x-axis and the average mismatch rates on
     # the y-axis in the figure
     ax.bar(x=dataframe_combined_mismatches.columns, height=dataframe_combined_mismatches.iloc[0], color=colors,
            width=0.5)
