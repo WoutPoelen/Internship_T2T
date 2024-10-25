@@ -1,25 +1,25 @@
 import argparse
+import numpy as np
 import pandas as pd
-from collections import Counter
 import matplotlib.pyplot as plt
 import matplotlib
 
 def open_file(argument):
     """
-    This functions opens the two given bed files that have the coverage of the regions. This file should be made with
-    the bash file.
+    This functions opens the two given bed files that have the coverage of the regions. These files should be made with
+    the bash file get_low_coverage_regions.sh.
 
     :param:
-        argument.T2T_gz_file (gz file): gz file containing the average coverage of the 500 bp regions from the t2t
-        genome.
-        argument.GRCh38_gz_file (gz file): gz file containing the average coverage of the 500 bp regions from the GRCh38
-        genome.
+        argument.T2T_coverage_file (gz file): gz file containing the average coverage of the 500 bp regions from the t2t
+        file.
+        argument.GRCh38_coverage_file (gz file): gz file containing the average coverage of the 500 bp regions from
+        the GRCh38 file.
 
     :return:
          t2t_dataframe(dataframe): a dataframe that contains the chromosome, start and end of the region.
-         Tt also has the coverage of the regions from the t2t bed file.
-         hg38_dataframe(dataframe: a dataframe that contains the chromosome, start and end of the region.
-         Tt also has the coverage of the regions from the hg38 bed file.
+         It also has the coverage of the regions from the t2t bed file.
+         hg38_dataframe(dataframe): a dataframe that contains the chromosome, start and end of the region.
+         It also has the coverage of the regions from the hg38 bed file.
     """
     print("Reading the files")
 
@@ -31,60 +31,64 @@ def open_file(argument):
     hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
     t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
 
+
+    return t2t_dataframe, hg38_dataframe
+
+def get_statistics(t2t_dataframe, hg38_dataframe):
+    """
+    This function calculates the standard deviation and mean of the coverage of the regions from the t2t and hg38
+    bed file. It also calculates the amount of regions with a coverage above a certain threshold.
+
+    :param:
+        t2t_dataframe(dataframe): a dataframe that contains the chromosome, start and end of the region.
+        It also has average coverage of the regions from the t2t bed file.
+        hg38_dataframe(dataframe): a dataframe that contains the chromosome, start and end of the region.
+        It also has the average coverage of the regions from the hg38 bed file.
+
+    :return:
+        t2t_standard_deviation(float): the standard deviation of the coverage from the t2t bed file.
+        hg38_standard_deviation(float): the standard deviation of the coverage from the hg38 bed file.
+        t2t_mean(float): the mean of the coverage from the t2t file.
+        hg38_mean(float): the mean of the coverage from the hg38 file.
+    """
+    # Calculates the amount of regions that have a coverage higher than 100. Change the number depending on what the
+    # threshold is meant to be
+    t2t_high_coverage = []
+    hg38_high_coverage = []
+    for coverage in t2t_dataframe["mean_coverage"]:
+        if coverage >= 100:
+            t2t_high_coverage.append(coverage)
+
+    for coverage in hg38_dataframe["mean_coverage"]:
+        if coverage >= 100:
+            hg38_high_coverage.append(coverage)
+
+    # Calculates the standard deviation of the mean coverage
     t2t_standard_deviation = t2t_dataframe["mean_coverage"].std()
     hg38_standard_deviation = hg38_dataframe["mean_coverage"].std()
 
-    print(t2t_standard_deviation)
-    print(hg38_standard_deviation)
-    print("Processing files")
-
-    # Filters the dataframes to get the first 5mbp of the first chromosome. Get rid of this if this isn't necessary
-    hg38_dataframe = hg38_dataframe[(hg38_dataframe["End"] <= 5000000) & (hg38_dataframe["Chromosome"] == "chr1")]
-    t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1")]
+    # Calculates the mean of the mean coverage
+    t2t_mean = t2t_dataframe["mean_coverage"].mean()
+    hg38_mean = hg38_dataframe["mean_coverage"].mean()
 
 
-    return t2t_dataframe, hg38_dataframe, t2t_standard_deviation, hg38_standard_deviation
+    return t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean
 
-def Counting_the_coverage(dataframe_t2t, dataframe_hg38):
+
+def make_histogram( t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean,
+                   t2t_dataframe, hg38_dataframe):
     """
-    This functions turns the dataframe column "mean coverage" into a list and makes a dictionary with the amount of
-    coverage as the keys and the amount of times that coverage was performed in the file.
+    Makes the histogram of the mean coverage columns. Also plots the mean and standard deviation of the coverage.
 
     :param:
-        dataframe_t2t(dataframe): a dataframe that contains the chromosome, start and end of the region.
-        Tt also has the coverage of the regions from the t2t bed file.
-        dataframe_hg38(dataframe): a dataframe that contains the chromosome, start and end of the region.
-        Tt also has the coverage of the regions from the hg38 bed file.
-
-    :return:
-        coverage_occurences_t2t(dictionary): a dictionary that contains the amount of times a amount of base coverage
-        occurs in the t2t bed file.
-        coverage_occurences_hg38(dictionary): a dictionary that contains the amount of times a amount of base coverage
-        occurs in the hg38 bed file.
-    """
-
-    # Turns the column "mean_coverage" into a list. This column contains the mean coverage of the bins.
-    mean_coverage_t2t = dataframe_t2t["mean_coverage"].tolist()
-    mean_coverage_hg38 = dataframe_hg38["mean_coverage"].tolist()
-
-    print("Calculating average coverage occurrences")
-
-    # Calculates amount of times an amount of mean coverage in the files.
-    coverage_occurrences_t2t = Counter(mean_coverage_t2t)
-    coverage_occurrences_hg38 = Counter(mean_coverage_hg38)
-
-    return coverage_occurrences_t2t, coverage_occurrences_hg38
-
-
-def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
-    """
-    Makes the histogram of the lists with the occurrences of the coverage amounts.
-
-    :param:
-        occurrences_coverage_t2t(dictionary): a dictionary that contains the amount of times an amount of coverage was
-        performed on a base pair.
-        occurrences_coverage_hg38 (dictionary): a dictionary that contains the amount of times an amount of coverage was
-        performed on a base pair.
+        t2t_standard_deviation(float): the standard deviation of the coverage from the t2t bed file.
+        hg38_standard_deviation(float): the standard deviation of the coverage from the hg38 bed file.
+        t2t_mean(float): the mean of the coverage from the t2t file.
+        hg38_mean(float): the mean of the coverage from the hg38 file.
+        t2t_dataframe(dataframe): a dataframe that contains the chromosome, start and end of the region.
+        It also has the average coverage of the regions in the t2t bed file.
+        hg38_dataframe(dataframe): a dataframe that contains the chromosome, start and end of the region.
+        It also has the average coverage of the regions from the hg38 bed file.
 
     :return:
         saves the plot as coverage_occurrences_histogram.png.
@@ -94,15 +98,40 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
 
     fig, ax = plt.subplots()
 
-    print("Generating the plot")
+    # Changes the average coverage columns of the dataframes into lists
+    data_t2t = t2t_dataframe["mean_coverage"].tolist()
+    data_hg38 = hg38_dataframe["mean_coverage"].tolist()
 
-    # Makes a histogram with each file having a different color, automated length of values on the x-axis (bins),
+    print("Generating the coverage occurrence histogram")
+
+    # makes the bin_size the exactly one by going to the highest number out of both lists
+    bin_size = np.arange(0, max(max(data_t2t), max(data_hg38)))
+
+    # Makes a histogram with each file having a different color, a bin size of one,
     # a label for the legend, a different alpha value and histtype to make the histograms easier to differentiate
-    ax.hist(occurrences_coverage_t2t, color="blue", bins="auto", label="T2T", alpha=0.5, histtype="step")
-    ax.hist(occurrences_coverage_hg38,color="green", bins="auto", label="GRCh38", alpha=0.25, histtype="stepfilled")
+    ax.hist(data_t2t, color="blue", bins=bin_size, label="T2T", alpha=0.5, histtype="step")
+    ax.hist(data_hg38, color="green", bins=bin_size, label="GRCh38", alpha=0.25, histtype="stepfilled")
+
+    # Adds a line for both the t2t mean and the hg38 mean
+    ax.axvline(t2t_mean,  color="red", label="T2T mean", linewidth=1, linestyle="--")
+    ax.axvline(hg38_mean, color="grey", label="HG38_mean", linewidth=1, linestyle="--")
+
+    # Adds a line for one standard deviation above the mean and another one for one standard deviation below the mean
+    # of the T2T file
+    ax.axvline((t2t_mean + t2t_standard_deviation), color="black", label="T2T standard deviation", linewidth=1,
+               linestyle="--")
+    ax.axvline((t2t_mean - t2t_standard_deviation), color="black", linewidth=1,
+               linestyle="--")
+
+    # Adds a line for one standard deviation above the mean and another one for one standard deviation below the mean
+    # of the Hg38 file
+    ax.axvline((hg38_mean + hg38_standard_deviation), color="orange", label="GRCh38 standard deviation", linewidth=1,
+               linestyle="--")
+    ax.axvline((hg38_mean - hg38_standard_deviation), color="orange", linewidth=1,
+               linestyle="--")
 
     # Makes a legend in the upper right
-    plt.legend(loc="upper right")
+    plt.legend(loc="upper right", prop={"size": 8})
 
     # Writes the title for the figure in the figure
     plt.title("Mean coverage occurrences")
@@ -111,9 +140,17 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
     ax.set_xlabel("Mean coverage")
     ax.set_ylabel("Number of occurrences")
 
-    # If a limit for the x and y-axis is necessary comment these two out
-    # ax.set_xlim(0, 250)
-    # ax.set_ylim(0, 250)
+    # The x-axis isn't going past the 100. Otherwise, the plot would have unnecessary numbers
+    ax.set_xlim(0, 100)
+
+    # Changes the 100 x tick to 100+ to show that there are still regions with coverages higher than 10
+    xticks = ax.get_xticks()
+    xtick_labels = [str(int(tick))
+                    if tick != 100 else "100+"
+                    for tick in xticks
+                    ]
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xtick_labels)
 
     # Saves the figure in a file
     plt.savefig("coverage_occurrences_histogram.png", bbox_inches="tight")
@@ -126,11 +163,12 @@ def make_histogram(occurrences_coverage_t2t, occurrences_coverage_hg38):
 
 def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
     """
-    This function gets the standard deviations of the mean coverage in both reference genomes and plots it.
+    This function gets the standard deviations of the mean coverage in both reference genomes and plots it in a
+    scatterplot.
 
     :param:
-        standard_deviation_t2t (int): standard deviation of the mean coverage column in the T2T dataframe.
-        standard_deviation_hg38 (int): standard deviation of the mean coverage column in the GRCh38 dataframe.
+        standard_deviation_t2t (float): standard deviation of the mean coverage column in the T2T dataframe.
+        standard_deviation_hg38 (float): standard deviation of the mean coverage column in the GRCh38 dataframe.
 
     :return:
         The scatterplot is saved as standard_deviation_coverage.png.
@@ -138,7 +176,7 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
     # Makes sure the plot works on the server
     matplotlib.use("Agg")
 
-    print("Generating the plot")
+    print("Generating the standard deviation scatterplot")
 
     # Makes a list with values for the y-axis and a list with the reference genomes
     line_values = [standard_deviation_hg38, standard_deviation_t2t]
@@ -161,6 +199,7 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
     plt.title("Standard deviation of the mean coverage")
     plt.legend()
 
+    # Saves the plot as standard deviation_coverage.png
     plt.savefig("standard_deviation_coverage.png", bbox_inches="tight")
 
     print("The scatterplot has been succesfully generated and saved as standard_deviation_coverage")
@@ -169,20 +208,23 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
 
 
 def main(args):
-    t2t_dataframe, hg38_dataframe, t2t_standard_deviation, hg38_standard_deviation = open_file(args)
-    coverage_occurences_t2t, coverage_occurences_hg38 = Counting_the_coverage(t2t_dataframe, hg38_dataframe)
-    make_histogram(coverage_occurences_t2t, coverage_occurences_hg38)
+    t2t_dataframe, hg38_dataframe= open_file(args)
+
+    t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean = get_statistics(t2t_dataframe, hg38_dataframe)
+
+    make_histogram(t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean, t2t_dataframe, hg38_dataframe)
+
     plot_standard_deviation(t2t_standard_deviation, hg38_standard_deviation)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("T2T_coverage_file",
-                        help="Path to the file containing the regions of 500 bp and their average coverage "
+                        help="Path to the gz file containing the regions of 500 bp and their average coverage "
                              "from the T2T file",
                         metavar="the T2T input gz file")
 
     parser.add_argument("GRCh38_coverage_file",
-                        help="Path to the file containing the regions of 500 bp and their average coverage "
+                        help="Path to the gz file containing the regions of 500 bp and their average coverage "
                              "from the GRCh38 file",
                         metavar="the GRCh38 input gz file")
 
