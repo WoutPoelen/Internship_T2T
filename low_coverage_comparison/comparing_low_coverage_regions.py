@@ -9,7 +9,8 @@ def generate_dataframes(argument):
     This functions gets the arguments from the command line, which are a bed file containing average low coverage
     regions from the T2T reference genome, one from the GRCh38 reference genome and one bed file containing the lifted
     over coordinates of the low coverage regions from T2T to GRCh38. After getting the files it turns them into pandas
-    dataframes.
+    dataframes. Low coverage is defined as 1/3 of the median.
+
     :param:
         argument.T2T_BED_file (bed file): BED file from process_regions_file.py containing the regions with average
         coverage below or equal to 10 from the T2T reference genome.
@@ -17,6 +18,7 @@ def generate_dataframes(argument):
         coverage below or equal to 10 from the GRCh38 reference genome.
         argument.Liftover_BED_file (bed file): BED file containing the lifted over regions with average coverage below
         or equal to 10 from the T2T reference genome to the GRCh38 reference genome.
+
     :return:
          t2t_dataframe (dataframe): Pandas dataframe containing the low average coverage BED file regions from the T2T
          reference genome.
@@ -40,7 +42,7 @@ def generate_dataframes(argument):
 
     print("Processing the files")
 
-    # Filters the pandas frames to only contain the first 5mbp of chromosome 1 and a coverage below 1
+    # Filters the pandas frames to only contain the first 5mbp of chromosome 1
     hg38_dataframe = hg38_dataframe[(hg38_dataframe["End"] <= 5000000) & (hg38_dataframe["Chromosome"] == "chr1")]
     t2t_dataframe = t2t_dataframe[(t2t_dataframe["End"] <= 5000000) & (t2t_dataframe["Chromosome"] == "chr1")]
     liftover_dataframe = liftover_dataframe[(liftover_dataframe["End"] <= 5000000) &
@@ -52,6 +54,7 @@ def generate_dataframes(argument):
 def plot_low_coverage(dataframe_t2t, dataframe_hg38, dataframe_liftover):
     """
     This functions plots the dataframes into a scatter plot to visualize overlapping and non-overlapping regions.
+
     :param:
         t2t_dataframe (dataframe): Pandas dataframe containing the low average coverage BED file regions from the T2T
         reference genome.
@@ -90,6 +93,7 @@ def plot_low_coverage(dataframe_t2t, dataframe_hg38, dataframe_liftover):
     plt.savefig("low_coverage_comparison.png")
 
     print("The low coverage plot has been successfully generated and save as low_coverage_comparison.png")
+
     # plt.show()
 
 
