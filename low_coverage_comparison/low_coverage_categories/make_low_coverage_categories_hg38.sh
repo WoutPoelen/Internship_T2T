@@ -31,5 +31,5 @@ echo $CENTROMERES_INPUT_FILE "has been processed and send the output to" $CENTRO
 
 # Get the amount of times a region overlaps with a category
 bedtools intersect -C -a $GRCH38_LOW_COVERAGE_INPUT_FILE -b $CENTROMERES_SORTED_OUTPUT_FILE $TRANSCRIPT_OUTPUT_FILE $CDS_OUTPUT_FILE $SD_INPUT_FILE   -names centromere transcript CDS  SD > $GRCH38_LOW_COVERAGE_CATEGORICAL_FILE
-echo $GRCH38_LOW_COVERAGE_INPUT_FILE "has been processed and send the output to" $GRCH38_LOW_COVERAGE_CATEGORICAL_FIL
+echo $GRCH38_LOW_COVERAGE_INPUT_FILE "has been processed and send the output to" $GRCH38_LOW_COVERAGE_CATEGORICAL_FILE
 
