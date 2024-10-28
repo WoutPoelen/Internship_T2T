@@ -9,7 +9,8 @@ def generate_dataframes(argument):
     This functions gets the arguments from the command line, which are a bed file containing average low coverage
     regions from the T2T reference genome, one from the GRCh38 reference genome and one bed file containing the lifted
     over coordinates of the low coverage regions from T2T to GRCh38. After getting the files it turns them into pandas
-    dataframes. Low coverage is defined as 1/3 of the median.
+    dataframes. Low coverage is defined as 1/3 of the median for the autosomal chromosomes and 1/6 of the median for the
+    X and Y chromosomes
 
     :param:
         argument.T2T_BED_file (bed file): BED file from process_regions_file.py containing the regions with average
@@ -54,7 +55,6 @@ def generate_dataframes(argument):
 def plot_low_coverage(dataframe_t2t, dataframe_hg38, dataframe_liftover):
     """
     This functions plots the dataframes into a scatter plot to visualize overlapping and non-overlapping regions.
-
     :param:
         t2t_dataframe (dataframe): Pandas dataframe containing the low average coverage BED file regions from the T2T
         reference genome.
@@ -93,7 +93,6 @@ def plot_low_coverage(dataframe_t2t, dataframe_hg38, dataframe_liftover):
     plt.savefig("low_coverage_comparison.png")
 
     print("The low coverage plot has been successfully generated and save as low_coverage_comparison.png")
-
     # plt.show()
 
 
