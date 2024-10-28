@@ -26,7 +26,7 @@ awk 'BEGIN{FS="\t"; OFS="\t"} $3 == "transcript" {print $1, $4,$5}' $GENES_INPUT
 echo $GENES_INPUT_FILE "has been processed and send the transcripts to" $TRANSCRIPT_OUTPUT_FILE
 
 # Processes the CenSat file to get the chromosome, start and end location
-zcat $CENTROMERES_INPUT_FILE | cut -f 2,3,4 | bedtools sort -i - > $CENTROMERES_SORTED_OUTPUT_FILE
+cat $CENTROMERES_INPUT_FILE | cut -f 2,3,4 | bedtools sort -i - > $CENTROMERES_SORTED_OUTPUT_FILE
 echo $CENTROMERES_INPUT_FILE "has been processed and send the output to" $CENTROMERES_SORTED_OUTPUT_FILE
 
 # Get the amount of times a region overlaps with a category
