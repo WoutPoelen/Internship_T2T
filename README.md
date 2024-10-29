@@ -65,7 +65,7 @@ This histogram also contains the mean and standard deviation of the coverage. Th
 Follow these steps to compare the regions with low coverage between the two reference genomes in the first 5 mega base pairs of chromosome 1:
 1. Run the [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
 ```
-python Make_low_coverage_regions.py T2T_regions.bed.gz GRCh38_regions.bed.gz GRCh38_low_coverage_regions.bed T2T_low_coverage_regions.bed
+python Make_low_coverage_regions.py T2T_regions.bed.gz GRCh38_regions.bed.gz T2T_low_coverage_regions.bed GRCh38_low_coverage_regions.bed
 ```
 This script calculates the median for the autosomal chrommosomes and the sex chromosomes separatly (alternative sequences were not used). Then calculates the low coverage threshold by dividing the median for the autosomal chromosomes by three and the median for the sex chromosomes by six.
 
