@@ -1,10 +1,10 @@
 library(karyoploteR)
 library(GenomicRanges)
 
-data_T2T <- toGRanges(data.frame(chr=fix_T2T_entire_genome_low_coverage["V1"], 
-                             start=fix_T2T_entire_genome_low_coverage["V2"], 
-                             end=fix_T2T_entire_genome_low_coverage["V3"],
-                             y=fix_T2T_entire_genome_low_coverage["V4"]))
+data_T2T <- toGRanges(data.frame(chr=T2T_low_coverage_HG002["V1"], 
+                             start=T2T_low_coverage_HG002["V2"], 
+                             end=T2T_low_coverage_HG002["V3"],
+                             y=T2T_low_coverage_HG002["V4"]))
 
 custom_genome <- toGRanges(data.frame(chr=chromosome_report_t2t$UCSC.style.name,
                                     start=0, 
