@@ -72,11 +72,11 @@ def get_statistics(t2t_dataframe, hg38_dataframe):
     hg38_mean = hg38_dataframe["mean_coverage"].mean()
 
 
-    return t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean
+    return t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean, t2t_high_coverage, hg38_high_coverage
 
 
 def make_histogram( t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean,
-                   t2t_dataframe, hg38_dataframe):
+                   t2t_dataframe, hg38_dataframe, t2t_high_coverage, hg38_high_coverage):
     """
     Makes the histogram of the mean coverage columns. Also plots the mean and standard deviation of the coverage.
 
@@ -104,13 +104,17 @@ def make_histogram( t2t_standard_deviation, hg38_standard_deviation, t2t_mean, h
 
     print("Generating the coverage occurrence histogram")
 
-    # makes the bin_size the exactly one by going to the highest number out of both lists
+    # Makes the bin_size the exactly one by going to the highest number out of both lists
     bin_size = np.arange(0, max(max(data_t2t), max(data_hg38)))
 
     # Makes a histogram with each file having a different color, a bin size of one,
     # a label for the legend, a different alpha value and histtype to make the histograms easier to differentiate
     ax.hist(data_t2t, color="blue", bins=bin_size, label="T2T", alpha=0.5, histtype="step")
     ax.hist(data_hg38, color="green", bins=bin_size, label="GRCh38", alpha=0.25, histtype="stepfilled")
+
+    # Adds the high coverage regions to the histogram
+    ax.hist(t2t_high_coverage, color="blue", bins=bin_size, alpha=0.5, histtype="step")
+    ax.hist(hg38_high_coverage, color="green", bins=bin_size, alpha=0.25, histtype="stepfilled")
 
     # Adds a line for both the t2t mean and the hg38 mean
     ax.axvline(t2t_mean,  color="red", label="T2T mean", linewidth=1, linestyle="--")
@@ -210,9 +214,11 @@ def plot_standard_deviation(standard_deviation_t2t, standard_deviation_hg38):
 def main(args):
     t2t_dataframe, hg38_dataframe= open_file(args)
 
-    t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean = get_statistics(t2t_dataframe, hg38_dataframe)
+    t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean, t2t_high_coverage, hg38_high_coverage\
+        = get_statistics(t2t_dataframe, hg38_dataframe)
 
-    make_histogram(t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean, t2t_dataframe, hg38_dataframe)
+    make_histogram(t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean, t2t_dataframe, hg38_dataframe,
+                   t2t_high_coverage, hg38_high_coverage)
 
     plot_standard_deviation(t2t_standard_deviation, hg38_standard_deviation)
 
