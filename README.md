@@ -57,15 +57,18 @@ bash get_coverage_mean_regions.sh T2T.bam name_prefix
 python make_coverage_mean_histogram.py T2T.bed.gz GRCh38.bed.gz
 ```
 5. The file coverage_occurrences_histogram.png contains the histogram.
+This histogram also contains the mean and standard deviation of the coverage. The occurrences of regions with coverage higher than 100 are combined and plotted at the 100+ label.
 6. The file standard_deviation_coverage.png contains the scatterplot
 
 ### Comparing the regions with low coverage <a name="Low_coverage"></a>
 
 Follow these steps to compare the regions with low coverage between the two reference genomes in the first 5 mega base pairs of chromosome 1:
-1. Run the [get_low_coverage_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/get_low_coverage_regions.sh) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
+1. Run the [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
 ```
-bash get_low_coverage_regions.sh T2T_regions.bed.gz T2T_low_coverage_regions.bed GRCh38_regions.bed.gz GRCh38_low_coverage_regions.bed
+python Make_low_coverage_regions.py T2T_regions.bed.gz GRCh38_regions.bed.gz GRCh38_low_coverage_regions.bed T2T_low_coverage_regions.bed
 ```
+This script calculates the median for the autosomal chrommosomes and the sex chromosomes separatly (alternative sequences were not used). Then calculates the low coverage threshold by dividing the median for the autosomal chromosomes by three and the median for the sex chromosomes by six.
+
 2. Lift the coordinates of the low average regions in the just gotten output_T2T.bed over to the GRCh38 reference genome with your preferred liftover tool. This results in a bed file containing the coordinates for the low average coverage regions on the GRCh38 reference genome.
 3. Run the [comparing_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/comparing_low_coverage_regions.py) python script with the input being the T2T.bed, GRCh38.bed and T2T_to_GRCh38.bed.
 ```
@@ -85,7 +88,7 @@ bash make_low_coverage_categories_hg38.sh hg38.ncbiRefSeq.gtf hg38_segmental_dup
 ```
 
 Then the T2T-CHM13:
-1. Obtain the refseq t2t genes gtf file ([link](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/)).
+1. Obtain the refseq t2t genes gtf file [link](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/).
 2. run [convert_T2T_genes_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/convert_T2T_genes_file.sh) to get the normal chromosome names.
 3. Obtain the bigbed (bb) file containing pericentromeric and centromeric satellites ([link](https://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?hgsid=345820279_xEDUaM4aXhxuQpQp1EiinRxuQAFH&db=hub_567047_hs1&c=chr9&g=hub_567047_censat)). Warning!!! This file doesn't contain every centromere perfectely. Some chromosomes have regions in their centromeres that will not be compared. This problem will be resolved once there is a file which contains all of the regions.
 4. Change the bb file into a bed file with the following code:
