@@ -31,6 +31,7 @@ def getting_argument(argument):
     t2t_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
     GRCh38_dataframe.columns = ["Chromosome", "Start", "End", "Coverage", "Category", "Count"]
 
+
     # Turn the amount of times the region overlaps with a difficult category binary. Because, some regions would have
     # 7 exomes and that isn't in line with the question that this script tries to answer:
     # with what do these low coverage overlap. Not with how many
@@ -56,19 +57,19 @@ def counting_total(t2t_dataframe, dataframe_GRCh38):
         (or more) of the difficult categories or none of the regions. These regions are from the grch38 genome.
     """
     print("Counting overlaps")
+    print(len(t2t_dataframe) / 4)
+    print(len(dataframe_GRCh38) / 4)
 
-    # Groups the dataframe by Start location of the region and the Count to check if the same start location has
-    # zero overlap with the categories
-    zero_count_per_start_t2t = t2t_dataframe.groupby('Start')['Count'].apply(lambda x: (x == 0).all())
-    zero_count_per_start_grch38 = dataframe_GRCh38.groupby('Start')['Count'].apply(lambda x: (x == 0).all())
+    # Aggregate overlaps per unique region (Chromosome, Start, End)
+    # This ensures that if any part of a region overlaps, it will have a Count of 1
+    t2t_aggregated = t2t_dataframe.groupby(['Chromosome', 'Start', 'End'], as_index=False)['Count'].sum()
+    grch38_aggregated = dataframe_GRCh38.groupby(['Chromosome', 'Start', 'End'], as_index=False)['Count'].sum()
 
-    # Get the 'Start' positions where all counts are zero and turns it into a list
-    start_positions_with_zero_counts_t2t = zero_count_per_start_t2t[zero_count_per_start_t2t].index.tolist()
-    start_positions_with_zero_counts_grch38 = zero_count_per_start_grch38[zero_count_per_start_grch38].index.tolist()
-
-    # The amount of not overlapping regions
-    total_no_overlaps_T2T = len(start_positions_with_zero_counts_t2t)
-    total_no_overlaps_GRCh38 = len(start_positions_with_zero_counts_grch38)
+    # Count the regions that have zero overlap by checking where Count == 0
+    total_no_overlaps_T2T = len(t2t_aggregated[t2t_aggregated['Count'] == 0])
+    total_no_overlaps_GRCh38 = len(grch38_aggregated[grch38_aggregated['Count'] == 0])
+    print(len(t2t_aggregated[t2t_aggregated['Count'] > 1]))
+    print(len(grch38_aggregated[grch38_aggregated['Count'] > 1]))
 
     # Group the DataFrame by "Category" and sum the "Count" column to get the amount of regions that overlap with the
     # categories
@@ -104,7 +105,7 @@ def making_barplot(t2t_count_values, grch38_count_values):
     
     # Combines the two dictionaries to make it easier to plot the grouped barplot
     complete_dictionary = {"T2T": t2t_count_values, "GRCh38": grch38_count_values}
-
+    print(complete_dictionary)
     # Makes a list of the categories to use as ticks for the plot
     categories = list(complete_dictionary["T2T"].keys())
 
@@ -113,11 +114,14 @@ def making_barplot(t2t_count_values, grch38_count_values):
     t2t_values_list = [complete_dictionary["T2T"][category] for category in categories]
     grch38_values_list = [complete_dictionary["GRCh38"][category] for category in categories]
 
+    print(sum(t2t_values_list))
+    print(sum(grch38_values_list))
+
     # Give an x-value to the bar plots, so the bar plots won't stack on top of each other when added or subtracted from
     x = np.arange(len(categories))
 
     # Makes matplotlib work on the server.
-    matplotlib.use("Agg")
+    # matplotlib.use("Agg")
 
     # Makes subplots
     fig, ax = plt.subplots(figsize=(8, 6))
