@@ -8,6 +8,7 @@
       - [Comparing average coverage](#Coverage)
       - [Comparing low coverage regions](#Low_coverage)
       - [Comparing difficult regions with the low coverage regions](#category)
+      - [Low coverage comparison with a karyoplot ](#karyoplot)
 
 
 ## Introduction <a name="introduction"></a>
@@ -65,7 +66,7 @@ This histogram also contains the mean and standard deviation of the coverage. Th
 Follow these steps to compare the regions with low coverage between the two reference genomes in the first 5 mega base pairs of chromosome 1:
 1. Run the [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
 ```
-python Make_low_coverage_regions.py T2T_regions.bed.gz GRCh38_regions.bed.gz GRCh38_low_coverage_regions.bed T2T_low_coverage_regions.bed
+python Make_low_coverage_regions.py T2T_regions.bed.gz GRCh38_regions.bed.gz T2T_low_coverage_regions.bed GRCh38_low_coverage_regions.bed
 ```
 This script calculates the median for the autosomal chrommosomes and the sex chromosomes separatly (alternative sequences were not used). Then calculates the low coverage threshold by dividing the median for the autosomal chromosomes by three and the median for the sex chromosomes by six.
 
@@ -78,7 +79,9 @@ python comparing_low_coverage_regions.py T2T_BED_file GRCh38_BED_file Liftover_B
 
 ### Comparing overlapping difficult regions with the low coverage regions <a name="category"></a>
 
-Follow these steps to create a bar plot showing the frequency of low coverage regions overlapping with centromeres, transcripts, coding sequences (CDS), and/or structural duplications. The steps for T2T and GRCh38 are different because they require different input files and are thus written separately. These steps are written with the assumption that step 1 of comparing low coverage regions has already been done and the low coverage files have been made.
+Follow these steps to create a bar plot showing which difficult to sequence regions overlap with the low coverage regions. Specifically looking at centromeres, transcripts, coding sequences (CDS), and/or structural duplications. This process is binary, meaning that if multiple exons overlap with a single region, they are counted as a single overlap. 
+
+These steps are written with the assumption that step 1 of comparing low coverage regions has already been done and the low coverage files have been made.
 
 First the GRCh38:
 1. Obtain the hg38.ncbiRefSeq.gtf file ([link](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)), a bed file with structural duplications (file was given directly, so no example is available) and a gz file with the centromeres ([link](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/)).
@@ -104,5 +107,60 @@ To make the plot:
 ```
 python script T2T_output_categorical.bed GRCh38_output_categorical.bed
 ```
-2. The barplot is saves as low_coverage_categories_barplot.png
+2. The barplot is saves as low_coverage_categories_barplot.png.
+
+### Low coverage comparison with a karyoplot <a name="karyoplot"></a>
+
+Follow these steps to make karyoplots of the GRCh38 and T2T reference genome with the low coverage regions. The Rscripts cannot be called on the command line.
+
+Installing necessary packages:
+1. Run the following code to install BiocManager
+```
+Install.packages("BiocManager")
+```
+2. Run the following code to install KaryoploteR
+```
+BiocManager::install("KaryoploteR")
+```
+
+GRCh38 karyoplot:
+1. Copy the [karyoplot_GRCh38.R](https://github.com/WoutPoelen/Internship_T2T/blob/main/Karyoplot/karyoplot_GRCh38.R) and paste it in Rstudio.
+2. Import the low coverage GRCh38 bed file (made in [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py))  as a dataset. This will automatically make it a table which is necessary for the script to work.
+3. Change the following lines to the name of the GRCh38 low coverage file:
+```
+(chr=GRCh38_low_coverage_HG002["V1"],
+start=GRCh38_low_coverage_HG002["V2"], 
+end=GRCh38_low_coverage_HG002["V3"],
+y=GRCh38_low_coverage_HG002["V4"]))
+```
+4. Run the script.
+5. Export the karyoplot to a specific location.
+
+
+T2T karyoplot (The T2T reference genome isn't available in KaryoplotR (version 1.30.0). So a custom reference genome needs to be created.):
+1. Copy the [karyoplot_T2T.R](https://github.com/WoutPoelen/Internship_T2T/blob/main/Karyoplot/karyoplot_T2T.R) and paste it in Rstudio
+2. Import the low coverage T2T bed file (made in [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py)) as a dataset. This will automatically make it a table which is necessary for the script to work.
+3. Change the following lines to the name of the T2T low coverage file:
+```
+chr=T2T_low_coverage_HG002["V1"], 
+start=T2T_low_coverage_HG002["V2"], 
+end=T2T_low_coverage_HG002["V3"],
+y=T2T_low_coverage_HG002["V4"])
+```
+4. Get the chromosomes length by downloading the [NIH T2T chromosomes dataset](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/) at the bottom of the website and importing the file as a dataset.
+5. Change the following lines to the name of the newly imported chromosome file (start doesn't have to change):
+```
+chr=chromosome_report_t2t$UCSC.style.name,
+start=0, 
+end=chromosome_report_t2t$Seq.length
+```
+6. Get the centromere locations by importing the bed file made in step 4 of the T2T part of [Comparing difficult regions with the low coverage regions](#category)
+7. Change the following lines to the name of the Censat centromere file:
+```
+chr=filtered_centromeres_CenSat$V1,
+start=filtered_centromeres_CenSat$V2,
+end=filtered_centromeres_CenSat$V3)
+```
+8. Run the script.
+9. Export the karyoplot to a specific location.
 
