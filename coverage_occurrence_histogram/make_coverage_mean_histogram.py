@@ -31,6 +31,12 @@ def open_file(argument):
     hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
     t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
 
+    autosomal_chromosomes = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10",
+                             "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",
+                             "chr20", "chr21", "chr22", "chrX", "chrY"]
+
+    hg38_dataframe = hg38_dataframe[hg38_dataframe["Chromosome"].isin(autosomal_chromosomes)]
+    t2t_dataframe = t2t_dataframe[t2t_dataframe["Chromosome"].isin(autosomal_chromosomes)]
 
     return t2t_dataframe, hg38_dataframe
 
@@ -51,26 +57,22 @@ def get_statistics(t2t_dataframe, hg38_dataframe):
         t2t_mean(float): the mean of the coverage from the t2t file.
         hg38_mean(float): the mean of the coverage from the hg38 file.
     """
-    # Calculates the amount of regions that have a coverage higher than 100. Change the number depending on what the
+    # Calculates the amount of regions that have a coverage higher than 80. Change the number depending on what the
     # threshold is meant to be
-    t2t_high_coverage = []
-    hg38_high_coverage = []
-    for coverage in t2t_dataframe["mean_coverage"]:
-        if coverage >= 100:
-            t2t_high_coverage.append(coverage)
-
-    for coverage in hg38_dataframe["mean_coverage"]:
-        if coverage >= 100:
-            hg38_high_coverage.append(coverage)
+    t2t_high_coverage = len(t2t_dataframe[t2t_dataframe["mean_coverage"] >= 80])
+    hg38_high_coverage = len(hg38_dataframe[hg38_dataframe["mean_coverage"] >= 80])
 
     # Calculates the standard deviation of the mean coverage
     t2t_standard_deviation = t2t_dataframe["mean_coverage"].std()
     hg38_standard_deviation = hg38_dataframe["mean_coverage"].std()
+    print("T2T standard deviation:", t2t_standard_deviation)
+    print("HG38 standard deviation:", hg38_standard_deviation)
 
     # Calculates the mean of the mean coverage
     t2t_mean = t2t_dataframe["mean_coverage"].mean()
     hg38_mean = hg38_dataframe["mean_coverage"].mean()
-
+    print("T2T mean:", t2t_mean)
+    print("HG38 mean:", hg38_mean)
 
     return t2t_standard_deviation, hg38_standard_deviation, t2t_mean, hg38_mean, t2t_high_coverage, hg38_high_coverage
 
@@ -113,8 +115,8 @@ def make_histogram( t2t_standard_deviation, hg38_standard_deviation, t2t_mean, h
     ax.hist(data_hg38, color="green", bins=bin_size, label="GRCh38", alpha=0.25, histtype="stepfilled")
 
     # Adds the high coverage regions to the histogram
-    ax.hist(t2t_high_coverage, color="blue", bins=bin_size, alpha=0.5, histtype="step")
-    ax.hist(hg38_high_coverage, color="green", bins=bin_size, alpha=0.25, histtype="stepfilled")
+    plt.bar(80, height=t2t_high_coverage, width=1, color="blue", alpha=0.5)
+    plt.bar(80, height=hg38_high_coverage, width=1, color="green", alpha=0.25)
 
     # Adds a line for both the t2t mean and the hg38 mean
     ax.axvline(t2t_mean,  color="red", label="T2T mean", linewidth=1, linestyle="--")
@@ -145,14 +147,13 @@ def make_histogram( t2t_standard_deviation, hg38_standard_deviation, t2t_mean, h
     ax.set_ylabel("Number of occurrences")
 
     # The x-axis isn't going past the 100. Otherwise, the plot would have unnecessary numbers
-    ax.set_xlim(0, 100)
+    ax.set_xlim(0, 80)
 
     # Changes the 100 x tick to 100+ to show that there are still regions with coverages higher than 10
     xticks = ax.get_xticks()
     xtick_labels = [str(int(tick))
-                    if tick != 100 else "100+"
-                    for tick in xticks
-                    ]
+                    if tick != 80 else "80+"
+                    for tick in xticks]
     ax.set_xticks(xticks)
     ax.set_xticklabels(xtick_labels)
 
