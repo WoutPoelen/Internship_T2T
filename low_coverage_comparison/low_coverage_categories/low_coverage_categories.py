@@ -68,8 +68,6 @@ def counting_total(t2t_dataframe, dataframe_GRCh38):
     # Count the regions that have zero overlap by checking where Count == 0
     total_no_overlaps_T2T = len(t2t_aggregated[t2t_aggregated['Count'] == 0])
     total_no_overlaps_GRCh38 = len(grch38_aggregated[grch38_aggregated['Count'] == 0])
-    print(len(t2t_aggregated[t2t_aggregated['Count'] > 1]))
-    print(len(grch38_aggregated[grch38_aggregated['Count'] > 1]))
 
     # Group the DataFrame by "Category" and sum the "Count" column to get the amount of regions that overlap with the
     # categories
