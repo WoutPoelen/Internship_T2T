@@ -3,11 +3,12 @@
 # Table of contents
 1. [Introduction](#introduction)
 2. [Usage](#Usage)
-      - [Comparing SV indel balance](#SVcomparing)
-      - [Comparing mismatch rate](#Mismatch)
-      - [Comparing average coverage](#Coverage)
-      - [Comparing low coverage regions](#Low_coverage)
-      - [Comparing difficult regions with the low coverage regions](#category)
+      - [Calculating and comparing the SV indel balance](#SVcomparing)
+      - [Calculating and comparing the mismatch rates](#Mismatch)
+      - [Comparing the average coverage of 500bp regions](#Coverage)
+      - [Identifying regions which have a low average coverage](#Low_coverage)
+      - [Overlapping regions that are difficult to map and regions with low coverage](#category)
+      - [Genes of which the coding sequences are in low coverage regions](#coding_sequences)
       - [Low coverage comparison with a karyoplot ](#karyoplot)
 
 
@@ -19,7 +20,7 @@ Over the years, several reference genomes for genomic analysis on humans have be
 
 ## Usage <a name="Usage"></a>
 
-### Comparing SV indel balance <a name="SVcomparing"></a>
+### Calculating and comparing the SV indel balance <a name="SVcomparing"></a>
 
 Follow these steps to create a line plot comparing the indel balance between the GRCh38 and T2T reference genomes, and a bar plot showing the difference in the total number of insertions and deletions between the two genomes:
 1. Go to the server where the VCF files that you want to plot are located (one from the Hg38 reference genome and one from the T2T reference genome).
@@ -34,7 +35,7 @@ python make_sv_lineplot.py t2t_sv.txt GRCh38_sv.txt
 4. The file SV_indel_comparison.png contains the line plot.
 5. The file Total_indel_comparison.png contains the barplot.
 
-### Comparing the mismatch rate <a name="Mismatch"></a>
+### Calculating and comparing the mismatch rates <a name="Mismatch"></a>
 
 Follow these steps to make the scatterplot showing the difference in mismatch rate between the GRCh38 and the T2T reference genomes:
 1. Get the Binary Alignment Map (BAM) files from the same sample where the reads are mapped against the GRCh38 or T2T reference genomes.
@@ -44,7 +45,7 @@ python make_coverage_plot.py T2T.bam GRCh38.bam
 ```
 3. The file mismatch_rate_comparison.png file contains the scatter plot.
 
-### Comparing average coverage <a name="Coverage"></a>
+### Comparing the average coverage of 500bp regions <a name="Coverage"></a>
 
 Follow these steps to create a histogram comparing the difference in average coverage for 500 base-pair regions between two reference genomes, and a scatterplot showing the difference in standard deviation of average coverage between the same regions:
 1. Get the same BAM files as used for the mismatch rate if using the same sample as used in that step is desired. Otherwise use BAM files from another sample that has BAM file from both reference genomes.
@@ -61,7 +62,7 @@ python make_coverage_mean_histogram.py T2T.bed.gz GRCh38.bed.gz
 This histogram also contains the mean and standard deviation of the coverage. The occurrences of regions with coverage higher than 100 are combined and plotted at the 100+ label.
 6. The file standard_deviation_coverage.png contains the scatterplot
 
-### Comparing the regions with low coverage <a name="Low_coverage"></a>
+### Identifying regions which have a low average coverage <a name="Low_coverage"></a>
 
 Follow these steps to compare the regions with low coverage between the two reference genomes in the first 5 mega base pairs of chromosome 1:
 1. Run the [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
@@ -77,7 +78,7 @@ python comparing_low_coverage_regions.py T2T_BED_file GRCh38_BED_file Liftover_B
 ```
 4. The file low_coverage_comparison.png contains the scatterplot.
 
-### Comparing overlapping difficult regions with the low coverage regions <a name="category"></a>
+### Overlapping regions that are difficult to map and regions with low coverage <a name="category"></a>
 
 Follow these steps to create a bar plot showing which difficult to sequence regions overlap with the low coverage regions. Specifically looking at centromeres, transcripts, coding sequences (CDS), and/or structural duplications. This process is binary, meaning that if multiple exons overlap with a single region, they are counted as a single overlap. 
 
@@ -91,7 +92,7 @@ bash make_low_coverage_categories_hg38.sh hg38.ncbiRefSeq.gtf hg38_segmental_dup
 ```
 
 Then the T2T-CHM13:
-1. Obtain the refseq t2t genes gtf file [link](ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/).
+1. Obtain the refseq t2t genes gtf file [link](ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/).
 2. run [convert_T2T_genes_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/convert_T2T_genes_file.sh) to get the normal chromosome names.
 3. Obtain the bigbed (bb) file containing pericentromeric and centromeric satellites ([link](https://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?hgsid=345820279_xEDUaM4aXhxuQpQp1EiinRxuQAFH&db=hub_567047_hs1&c=chr9&g=hub_567047_censat)). Warning!!! This file doesn't contain every centromere perfectely. Some chromosomes have regions in their centromeres that will not be compared. This problem will be resolved once there is a file which contains all of the regions.
 4. Change the bb file into a bed file with the following code:
@@ -108,6 +109,11 @@ To make the plot:
 python script T2T_output_categorical.bed GRCh38_output_categorical.bed
 ```
 2. The barplot is saves as low_coverage_categories_barplot.png.
+
+
+### Genes of which the coding sequences are in low coverage regions <a name="coding_sequences"><\a>
+Follow these
+
 
 ### Low coverage comparison with a karyoplot <a name="karyoplot"></a>
 
