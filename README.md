@@ -3,7 +3,7 @@
 # Table of contents
 1. [Introduction](#introduction)
 2. [Usage](#Usage)
-      - [Calculating and comparing SV indel balance](#SVcomparing)
+      - [Calculating and comparing the SV indel balance](#SVcomparing)
       - [Calculating and comparing the mismatch rates](#Mismatch)
       - [Comparing the average coverage of 500bp regions](#Coverage)
       - [Identifying regions which have a low average coverage](#Low_coverage)
@@ -20,7 +20,7 @@ Over the years, several reference genomes for genomic analysis on humans have be
 
 ## Usage <a name="Usage"></a>
 
-### Calculating and comparing SV indel balance <a name="SVcomparing"></a>
+### Calculating and comparing the SV indel balance <a name="SVcomparing"></a>
 
 Follow these steps to create a line plot comparing the indel balance between the GRCh38 and T2T reference genomes, and a bar plot showing the difference in the total number of insertions and deletions between the two genomes:
 1. Go to the server where the VCF files that you want to plot are located (one from the Hg38 reference genome and one from the T2T reference genome).
@@ -112,6 +112,8 @@ python script T2T_output_categorical.bed GRCh38_output_categorical.bed
 
 
 ### Genes of which the coding sequences are in low coverage regions <a name="coding_sequences"><\a>
+Follow these
+
 
 ### Low coverage comparison with a karyoplot <a name="karyoplot"></a>
 
