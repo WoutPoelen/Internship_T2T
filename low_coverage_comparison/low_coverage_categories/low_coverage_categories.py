@@ -57,8 +57,6 @@ def counting_total(t2t_dataframe, dataframe_GRCh38):
         (or more) of the difficult categories or none of the regions. These regions are from the grch38 genome.
     """
     print("Counting overlaps")
-    print(len(t2t_dataframe) / 4)
-    print(len(dataframe_GRCh38) / 4)
 
     # Aggregate overlaps per unique region (Chromosome, Start, End)
     # This ensures that if any part of a region overlaps, it will have a Count of 1
