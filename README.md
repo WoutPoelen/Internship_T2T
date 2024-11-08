@@ -112,7 +112,41 @@ python script T2T_output_categorical.bed GRCh38_output_categorical.bed
 
 
 ### Genes of which the coding sequences are in low coverage regions <a name="coding_sequences"><\a>
-Follow these
+Follow these steps to get the amount of genes whose coding sequence overlap with a low coverage region:
+1. Run the [low_coverage_CDS_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories/low_coverage_genes/low_coverage_CDS_regions.sh) bash script with these files (some files get written to during the execution of the script and are given as empty files):
+- T2T categorical file: the BED file made in [Overlapping regions that are difficult to map and regions with low coverage](#category) containing the number difficult the map regions which overlap with a certain low coverage region in the T2T reference genome.
+- T2T categorical CDS only file:  an initially empty BED file that gets populated with the low coverage regions that overlap with one or more CDS regions in the GRCh38 reference genome during the execution of the script.
+- GRCh38 categorical file: the BED file made in [Overlapping regions that are difficult to map and regions with low coverage](#category) containing the number difficult the map regions which overlap with a certain low coverage region in the GRCh38 reference genome.
+- GRCh38 categorical CDS only file: an initially empty BED file that gets populated with the low coverage regions that overlap with one or more CDS regions in the T2T reference genome during the execution of the script.
+- T2T RefSeq file: GTF file containing the genes in the T2T reference genome. Use the gtf file gotten in step 2 of the T2T intersection steps of [Overlapping regions that are difficult to map and regions with low coverage](#category).
+- T2T CDS genes file: an initially empty BED file that gets populated with the chromosome, start, end, and gene_id of the CDS regions in the T2T reference genome during the execution of the script.
+- GRCh38 RefSeq GTF file: file containing the genes in the GRCh38 reference genome. Used in the GRCh38 intersection of [Overlapping regions that are difficult to map and regions with low coverage](#category)
+- GRCh38 CDS genes file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the CDS regions in the T2T reference genome during the execution of the script.
+-  T2T CDS GeneID overlapping only file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the gene_ids which are also in the GRCh38 CDS file during the execution of the script.
+-  GRCh38 CDS GeneID overlapping only file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the gene_ids which are also in the T2T CDS file during the execution of the script.
+-  T2T intersected CDS file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the CDS regions in the T2T CDS GeneID overlapping file which overlap with the low coverage CDS regions in the T2T categorical CDS only file during the execution of the script.
+-  GRCh38 intersected CDS file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the CDS regions in the T2T CDS GeneID overlapping file which overlap with the low coverage CDS regions in the T2T categorical CDS only file during the execution of the script.
+
+Code example:
+```
+bash low_coverage_CDS_regions.sh T2T_categorical.bed T2T_categorical_CDS_Only.bed GRCh38_categorical.bed GRCh38_categorical_CDS_only.bed T2T_RefSeq_normal_chromosomes.gtf T2T_CDS_genes.bed GRCh38_RefSeq_file.gtf GRCh38_CDS_genes.bed T2T_CDS_GeneID_overlapping.bed GRCh38_CDS_GeneID_overlapping.bed T2T_intersected_CDS.bed GRCh38_intersected_CDS.bed
+```
+2. Run the [comparing_low_coverage_genes.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories/low_coverage_genes/comparing_low_coverage_genes.py) python script like the following code example:
+```
+python comparing_low_coverage_genes.py T2T_intersected_CDS.bed GRCh38_intersected_CDS.bed
+```
+3. The plot is saved as Coding_Sequences_in_low_coverage_regions.png
+
+
+
+##### If the actual gene_ids are necessary remove the len() from the following lines:
+```
+common_genes = len(list(common_genes_dataframe["Gene_id"]))
+
+t2t_unique = len(list(t2t_unique_dataframe["Gene_id"]))
+
+GRCh38_unique = len(list(GRCh38_unique_dataframe["Gene_id"]))
+```
 
 
 ### Low coverage comparison with a karyoplot <a name="karyoplot"></a>
