@@ -133,20 +133,10 @@ bash low_coverage_CDS_regions.sh T2T_categorical.bed T2T_categorical_CDS_Only.be
 ```
 2. Run the [comparing_low_coverage_genes.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories/low_coverage_genes/comparing_low_coverage_genes.py) python script like the following code example:
 ```
-python comparing_low_coverage_genes.py T2T_intersected_CDS.bed GRCh38_intersected_CDS.bed
+python comparing_low_coverage_genes.py T2T_intersected_CDS.bed GRCh38_intersected_CDS.bed shared_genes.txt T2T_unique_genes.txt GRCh38_unqiue_genes.txt
 ```
 3. The plot is saved as Coding_Sequences_in_low_coverage_regions.png
-
-
-
-##### If the actual gene_ids are necessary remove the len() from the following lines:
-```
-common_genes = len(list(common_genes_dataframe["Gene_id"]))
-
-t2t_unique = len(list(t2t_unique_dataframe["Gene_id"]))
-
-GRCh38_unique = len(list(GRCh38_unique_dataframe["Gene_id"]))
-```
+4. The genes which have a coding sequence which overlap with a low coverage region in both files are written to shared_genes.txt. The genes with coding sequences that overlap exclusively with low coverage regions in T2T are recorded in T2T_unique.txt. The genes with coding sequences that overlap exclusively with low coverage regions in GRCh38 are recorded in GRCh38_unique.txt
 
 
 ### Low coverage comparison with a karyoplot <a name="karyoplot"></a>
