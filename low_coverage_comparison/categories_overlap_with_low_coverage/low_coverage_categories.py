@@ -10,8 +10,8 @@ def getting_argument(argument):
     reference genome overlap with centromeres, transcripts, coding sequences (CDS) and sequential duplications (SD).
 
     :param:
-        argument.intersected_bed_file_T2T (bed file): bed file containing the T2T to GRCh38 lifted over
-        low coverage regions the amount of times it overlaps with a centromere, transcript, coding sequence and
+        argument.intersected_bed_file_T2T (bed file): bed file containing the T2T
+        low coverage regions and the amount of times it overlaps with a centromere, transcript, coding sequence and
         sequential duplication.
         argument.intersected_bed_file_GRCh38 (bed file): bed file containing the low coverage regions and the amount of
         times it overlaps with a centromere, transcript, coding sequence and sequential duplication.

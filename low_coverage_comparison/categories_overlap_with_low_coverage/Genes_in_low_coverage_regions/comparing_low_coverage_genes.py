@@ -175,6 +175,10 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
                                                        suffix1="_low_coverage_region",
                                                        suffix2="_SD")
 
+    # Gets the non-segmental duplication genes
+    non_overlapping_t2t_genes = (t2t_unique_low_coverage_regions_dataframe[
+        ~t2t_unique_low_coverage_regions_dataframe["Gene_id"].isin(filtered_t2t_df["Gene_id"])])
+
     # Gives the dataframe with the low coverage regions and the dataframe with the segmental duplications in the GRCh38
     # reference genome to the finding_overlaps_low_coverage_SD function. So, that it can find the low coverage regions
     # which overlap with the segmental duplications and puts them into a dataframe
@@ -182,6 +186,10 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
                                                         hg38_Segmental_Duplications,
                                                         suffix1="_low_coverage_region",
                                                         suffix2="_SD")
+
+    # Gets the non-overlapping genes
+    non_overlapping_GRCh38_genes = (GRCh38_unique_low_coverage_regions_dataframe[
+        ~GRCh38_unique_low_coverage_regions_dataframe["Gene_id"].isin(filtered_hg38_df["Gene_id"])])
 
     # Gives the dataframe with the low coverage regions and Gene_ids in both reference genomes and
     # the dataframe with the segmental duplications in the T2T reference genome to the
@@ -216,7 +224,9 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
     filtered_hg38_dataframe_length = len(filtered_hg38_df["Gene_id"].unique())
     unique_common_SD_overlap_genes = len(numpy.unique(common_low_coverage_SD_overlap))
 
-    return filtered_t2t_dataframe_length, filtered_hg38_dataframe_length, unique_common_SD_overlap_genes
+    return (filtered_t2t_dataframe_length, filtered_hg38_dataframe_length, unique_common_SD_overlap_genes,
+            non_overlapping_t2t_genes, non_overlapping_GRCh38_genes)
+
 
 
 def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_coverage_regions_length,
@@ -301,7 +311,8 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
     # plt.show()
 
 
-def write_to_file(arguments, common_genes, t2t_unique_genes, GRCh38_unique_genes):
+def write_to_file(arguments, common_genes, t2t_unique_genes, GRCh38_unique_genes, non_overlapping_t2t_genes,
+                  non_overlapping_GRCh38_genes):
     """
     This function writes the genes of each dataframe to their respective file.
 
@@ -334,6 +345,10 @@ def write_to_file(arguments, common_genes, t2t_unique_genes, GRCh38_unique_genes
         for gene in GRCh38_unique_genes:
             GRCh38_file.write("{}\n".format(gene))
 
+    non_overlapping_t2t_genes.to_csv(arguments.non_SD_overlapping_genes_T2T, index=False, sep="\t")
+
+    non_overlapping_GRCh38_genes.to_csv(arguments.non_SD_overlapping_genes_Hg38, index=False, sep="\t")
+
 
 def main(args):
     t2t_dataframe, hg38_dataframe = get_files(args)
@@ -342,13 +357,25 @@ def main(args):
      GRCh38_unique_genes, t2t_unique_dataframe, GRCh38_unique_dataframe, common_dataframe) = sort_files(t2t_dataframe,
                                                                                                         hg38_dataframe)
 
-    filtered_t2t_dataframe_length, filtered_hg38_dataframe_length, unique_common_SD_overlap_genes  \
-        = compare_with_SD(args, t2t_unique_dataframe, GRCh38_unique_dataframe, common_dataframe)
+    (filtered_t2t_dataframe_length, filtered_hg38_dataframe_length, unique_common_SD_overlap_genes,
+     non_overlapping_t2t_genes, non_overlapping_GRCh38_genes) = compare_with_SD(args,
+                                                                                t2t_unique_dataframe,
+                                                                                GRCh38_unique_dataframe,
+                                                                                common_dataframe)
 
-    make_barplot(common_genes_length, t2t_unique_length, GRCh38_unique_length,
-                 filtered_t2t_dataframe_length, filtered_hg38_dataframe_length, unique_common_SD_overlap_genes)
+    make_barplot(common_genes_length,
+                 t2t_unique_length,
+                 GRCh38_unique_length,
+                 filtered_t2t_dataframe_length,
+                 filtered_hg38_dataframe_length,
+                 unique_common_SD_overlap_genes)
 
-    write_to_file(args, common_genes, t2t_unique_genes, GRCh38_unique_genes)
+    write_to_file(args,
+                  common_genes,
+                  t2t_unique_genes,
+                  GRCh38_unique_genes,
+                  non_overlapping_t2t_genes,
+                  non_overlapping_GRCh38_genes)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -373,6 +400,8 @@ if __name__ == "__main__":
                         help="Path to the file containing the known segmental duplications in the T2T reference genome")
     parser.add_argument("SD_GRCh38",
                         help="Path to the file containing the segmental duplications in the GRCh38 reference genome")
+    parser.add_argument("non_SD_overlapping_genes_T2T")
+    parser.add_argument("non_SD_overlapping_genes_Hg38")
 
     args = parser.parse_args()
     main(args)

@@ -136,7 +136,7 @@ def plot_boxplot_comparison(mismatch_mean_hg38, mismatch_mean_t2t):
 
     # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
     # when you want to see the file outside the server
-    # plt.show()éee
+    # plt.show()
 
 def main(args):
     hg38_reads, t2t_reads = read_files(args)
