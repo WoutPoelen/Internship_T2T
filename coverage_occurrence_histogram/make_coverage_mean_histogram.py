@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib
+from pandas.conftest import names
+
 
 def open_file(argument):
     """
@@ -22,14 +24,13 @@ def open_file(argument):
          It also has the coverage of the regions from the hg38 bed file.
     """
     print("Reading the files")
+    column_names = ["Chromosome", "Start", "End", "mean_coverage"]
 
     # Unzips with gzip and turns the files given by the user into dataframes
-    t2t_dataframe = pd.read_csv(argument.T2T_coverage_file, sep="\t", compression="gzip", encoding="utf-8")
-    hg38_dataframe = pd.read_csv(argument.GRCh38_coverage_file, sep="\t", compression="gzip", encoding="utf-8")
-
-    # Sets the column names for the dataframe.
-    hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
-    t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
+    t2t_dataframe = pd.read_csv(argument.T2T_coverage_file, sep="\t", compression="gzip", encoding="utf-8",
+                                names=column_names)
+    hg38_dataframe = pd.read_csv(argument.GRCh38_coverage_file, sep="\t", compression="gzip", encoding="utf-8",
+                                 names=column_names)
 
     autosomal_chromosomes = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10",
                              "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19",

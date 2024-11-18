@@ -21,9 +21,10 @@ def open_sv_files(arguments):
         df_hg38_deletions_absolute (pandas dataframe): dataframe containing deletions from the hg38 file in absolute
         format.
     """
+    column_names = ["CHROM", "POS", "FILTER", "GT", "LENGTH"]
     # Opens the argument files and makes them into dataframes
-    t2t_dataframe = pd.read_csv(arguments.T2T_filtered_txt_file, sep=" ", encoding="utf-8")
-    hg38_dataframe = pd.read_csv(arguments.GRCh38_filtered_txt_file, sep=" ", encoding="utf-8")
+    t2t_dataframe = pd.read_csv(arguments.T2T_filtered_txt_file, sep=" ", encoding="utf-8", names=column_names)
+    hg38_dataframe = pd.read_csv(arguments.GRCh38_filtered_txt_file, sep=" ", encoding="utf-8", names=column_names)
 
     # Gives the column names to the dataframe
     t2t_dataframe.columns = ["CHROM", "POS", "FILTER", "GT", "LENGTH"]

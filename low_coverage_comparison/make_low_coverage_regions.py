@@ -15,11 +15,12 @@ def obtain_files(arguments):
         t2t_dataframe(dataframe): dataframe containing the 500 bp regions and their coverage from the T2T genome.
         hg38_dataframe(dataframe): dataframe containing the 500 bp regions and their coverage from the GRCh38 genome.
     """
+    column_names = ["Chromosome", "Start", "End", "mean_coverage"]
     # Turns the two gz files given in the command line into dataframes and adds column names to them
-    t2t_dataframe = pd.read_csv(arguments.T2T_gz_file, sep="\t", compression="gzip", encoding="utf-8")
-    hg38_dataframe = pd.read_csv(arguments.GRCh38_gz_file, sep="\t", compression="gzip", encoding="utf-8")
-    t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
-    hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
+    t2t_dataframe = pd.read_csv(arguments.T2T_gz_file, sep="\t", compression="gzip", encoding="utf-8",
+                                names=column_names)
+    hg38_dataframe = pd.read_csv(arguments.GRCh38_gz_file, sep="\t", compression="gzip", encoding="utf-8",
+                                 names=column_names)
 
     return t2t_dataframe, hg38_dataframe
 

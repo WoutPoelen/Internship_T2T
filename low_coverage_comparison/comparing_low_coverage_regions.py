@@ -28,18 +28,15 @@ def generate_dataframes(argument):
          liftover_dataframe (dataframe): Pandas dataframe containing lifted over low average coverage regions from the
          T2T reference genome to the GRCh38 reference genome.
     """
-
-    # Turns the files gotten from the command line and turns them into pandas dataframes
-    t2t_dataframe = pd.read_csv(argument.T2T_BED_file, sep="\t", encoding="utf-8")
-    hg38_dataframe = pd.read_csv(argument.GRCh38_BED_file, sep="\t", encoding="utf-8")
-    liftover_dataframe = pd.read_csv(argument.Liftover_BED_file, sep="\t", encoding="utf-8")
-
     print("Reading the files")
 
-    # Adds columns to the dataframes
-    t2t_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
-    hg38_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage"]
-    liftover_dataframe.columns = ["Chromosome", "Start", "End", "mean_coverage", "succesful_liftover"]
+    column_names = ["Chromosome", "Start", "End", "mean_coverage"]
+    liftover_column_names = ["Chromosome", "Start", "End", "mean_coverage", "succesful_liftover"]
+    # Turns the files gotten from the command line and turns them into pandas dataframes
+    t2t_dataframe = pd.read_csv(argument.T2T_BED_file, sep="\t", encoding="utf-8", names=column_names)
+    hg38_dataframe = pd.read_csv(argument.GRCh38_BED_file, sep="\t", encoding="utf-8", names=column_names)
+    liftover_dataframe = pd.read_csv(argument.Liftover_BED_file, sep="\t", encoding="utf-8",
+                                     names=liftover_column_names)
 
     print("Processing the files")
 

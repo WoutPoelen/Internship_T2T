@@ -21,15 +21,12 @@ def getting_argument(argument):
         T2T to GRCh38.
         GRCh38_dataframe (dataframe): dataframe containing the low coverage regions from the GRCh38 genome.
     """
+    column_names = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
     # Open the arguments given bed files and make dataframes from them
-    t2t_dataframe = pd.read_csv(argument.intersected_bed_file_T2T, sep="\t", encoding="utf-8")
-    GRCh38_dataframe = pd.read_csv(argument.intersected_bed_file_GRCh38, sep="\t", encoding="utf-8")
+    t2t_dataframe = pd.read_csv(argument.intersected_bed_file_T2T, sep="\t", encoding="utf-8", names=column_names)
+    GRCh38_dataframe = pd.read_csv(argument.intersected_bed_file_GRCh38, sep="\t", encoding="utf-8", names=column_names)
 
     print("Reading the files")
-
-    # Add column names to the dataframes
-    t2t_dataframe.columns = ["Chromosome","Start", "End", "Coverage", "Category", "Count"]
-    GRCh38_dataframe.columns = ["Chromosome", "Start", "End", "Coverage", "Category", "Count"]
 
 
     # Turn the amount of times the region overlaps with a difficult category binary. Because, some regions would have
