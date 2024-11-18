@@ -1,4 +1,6 @@
 import argparse
+import re
+
 import matplotlib
 import numpy
 import pandas as pd
@@ -23,13 +25,11 @@ def get_files(arguments):
         hg38_dataframe: dataframe containing the chromosome, start, end and Gene_id of the CDS regions in the
         GRCh38 intersect file.
     """
+    column_names = ["Chromosome", "Start", "End", "Gene_id"]
     # Turns the two bed files into pandas dataframes
-    t2t_dataframe = pd.read_csv(arguments.T2T_intersected_CDS_Only, sep="\t", encoding="utf-8")
-    hg38_dataframe = pd.read_csv(arguments.GRCh38_intersected_CDS_only, sep="\t", encoding="utf-8")
-
-    # Adds columns to the dataframes
-    hg38_dataframe.columns = ["Chromosome", "Start", "End", "Gene_id"]
-    t2t_dataframe.columns = ["Chromosome", "Start", "End", "Gene_id"]
+    t2t_dataframe = pd.read_csv(arguments.T2T_intersected_CDS_Only, sep="\t", encoding="utf-8", names=column_names)
+    hg38_dataframe = pd.read_csv(arguments.GRCh38_intersected_CDS_only, sep="\t", encoding="utf-8", names=column_names)
+    print(t2t_dataframe)
 
     # Ensure each gene_id with overlapping CDS appears only once in the dataframe to avoid duplicate counts.
     t2t_dataframe = t2t_dataframe.drop_duplicates(subset="Gene_id")
@@ -42,8 +42,16 @@ def get_files(arguments):
     t2t_dataframe.loc[t2t_condition, "Gene_id"] = t2t_dataframe.loc[t2t_condition, "Gene_id"].astype(str) + "_Y"
     hg38_dataframe.loc[hg38_condition, "Gene_id"] = hg38_dataframe.loc[hg38_condition, "Gene_id"].astype(str) + "_Y"
 
+    t2t_dataframe["Gene_id"] = t2t_dataframe["Gene_id"].str.split(",")
+    t2t_dataframe = t2t_dataframe.explode("Gene_id")
+
+    hg38_dataframe["Gene_id"] = hg38_dataframe["Gene_id"].str.split(",")
+    hg38_dataframe = hg38_dataframe.explode("Gene_id")
+
     return t2t_dataframe, hg38_dataframe
 
+def normalize_Y_genes(gene_name):
+    return re.sub(r"_[1-9]", "",  gene_name)
 
 def sort_files(t2t_dataframe, hg38_dataframe):
     """
@@ -72,6 +80,9 @@ def sort_files(t2t_dataframe, hg38_dataframe):
         GRCh38_unique_low_coverage_regions_genes_length (dataframe):dataframe containing gene_ids with
         coding sequences located exclusively in low coverage regions of GRCh38.
     """
+    t2t_dataframe["Gene_id"] = t2t_dataframe["Gene_id"].apply(normalize_Y_genes)
+    hg38_dataframe["Gene_id"] = hg38_dataframe["Gene_id"].apply(normalize_Y_genes)
+
     # For each gene_id in the dataframe, checks if it exists in the other dataframe and adds a True/False column to
     # indicate the result
     t2t_dataframe["Gene_id_in_GRCh38"] = t2t_dataframe["Gene_id"].isin(hg38_dataframe["Gene_id"])
@@ -126,11 +137,11 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
         unique_common_SD_overlap_gen (int): integer showing the amount of gene_ids which have low coverage regions
         located in coding sequences and segmental duplications in both reference genomes.
     """
+    column_names = ["Chromosome", "Start", "End"]
+
     # Reads the files with the segmental duplications and turns them into dataframes, also adds comments
-    t2t_Segmental_Duplications = pd.read_csv(arguments.SD_T2T, sep="\t", encoding="utf-8")
-    hg38_Segmental_Duplications = pd.read_csv(arguments.SD_GRCh38, sep="\t", encoding="utf-8")
-    t2t_Segmental_Duplications.columns = ["Chromosome", "Start", "End"]
-    hg38_Segmental_Duplications.columns = ["Chromosome", "Start", "End"]
+    t2t_Segmental_Duplications = pd.read_csv(arguments.SD_T2T, sep="\t", encoding="utf-8", names=column_names)
+    hg38_Segmental_Duplications = pd.read_csv(arguments.SD_GRCh38, sep="\t", encoding="utf-8", names=column_names)
 
     def finding_overlaps_low_coverage_SD(dataframe_1, dataframe_2, suffix1="_df1", suffix2="_df2"):
         """
@@ -191,6 +202,10 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
     non_overlapping_GRCh38_genes = (GRCh38_unique_low_coverage_regions_dataframe[
         ~GRCh38_unique_low_coverage_regions_dataframe["Gene_id"].isin(filtered_hg38_df["Gene_id"])])
 
+    print(filtered_hg38_df["Gene_id"].unique())
+    print(non_overlapping_GRCh38_genes["Gene_id"].unique())
+    print(filtered_t2t_df["Gene_id"].unique())
+    print(non_overlapping_t2t_genes["Gene_id"].unique())
     # Gives the dataframe with the low coverage regions and Gene_ids in both reference genomes and
     # the dataframe with the segmental duplications in the T2T reference genome to the
     # finding_overlaps_low_coverage_SD function. So, that it can find the low coverage regions which overlap with
