@@ -33,12 +33,12 @@ echo "The coding sequence rows have been obtained and sent to: $T2T_CDS_genes , 
 
 # Step 3: Getting the rows with the Gene_id's which are in the other RefSeq file.
 # This is done to stop the difference from triggering due to a name difference.
-awk '{print $4}' "$GRCh38_CDS_genes" | uniq | grep -Ff -  "$T2T_CDS_genes" | bedtools sort -i - | bedtools merge -d 5 -i > "$T2T_CDS_GeneID_Overlapping"
-awk '{print $4}' "$T2T_CDS_genes"  | uniq | grep -Ff -  "$GRCh38_CDS_genes" | bedtools sort -i - | bedtools merge -d 5 -i> "$GRCh38_CDS_GeneID_Overlapping"
+awk '{print $4}' "$GRCh38_CDS_genes" | uniq | grep -Ff -  "$T2T_CDS_genes" | bedtools sort -i - | bedtools merge -d 5 -i - > "$T2T_CDS_GeneID_Overlapping"
+awk '{print $4}' "$T2T_CDS_genes"  | uniq | grep -Ff -  "$GRCh38_CDS_genes" | bedtools sort -i - | bedtools merge -d 5 -i -> "$GRCh38_CDS_GeneID_Overlapping"
 echo "The rows with the Gene_ids which are in both files are gotten and sent to: $T2T_CDS_GeneID_Overlapping , $GRCh38_CDS_GeneID_Overlapping"
 
 # Step 4: Intersecting the regions from the RefSeq files and their Gene_id's with the low coverage regions found in the
 # categorical file.
-bedtools intersect -a "$T2T_CDS_GeneID_Overlapping" -b "$T2T_filtered_categorical_file" | bedtools sort -i - | bedtools merge -d 5 -i|  uniq > "$T2T_intersected_CDS"
-bedtools intersect -a "$GRCh38_CDS_GeneID_Overlapping" -b "$GRCh38_filtered_categorical_file" | bedtools sort -i - | bedtools merge -d 5 -i | uniq > "$GRCh38_intersected_CDS"
+bedtools intersect -a "$T2T_CDS_GeneID_Overlapping" -b "$T2T_filtered_categorical_file" | bedtools sort -i - | bedtools merge -d 5 -i - |  uniq > "$T2T_intersected_CDS"
+bedtools intersect -a "$GRCh38_CDS_GeneID_Overlapping" -b "$GRCh38_filtered_categorical_file" | bedtools sort -i - | bedtools merge -d 5 -i - | uniq > "$GRCh38_intersected_CDS"
 echo "The regions from the RefSeq files and their Gene_id's with the low coverage regions found in the categorical file are intersected and sent to: $T2T_intersected_CDS , $GRCh38_intersected_CDS"
