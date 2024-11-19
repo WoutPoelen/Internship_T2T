@@ -1,6 +1,4 @@
 import argparse
-import re
-
 import matplotlib
 import numpy
 import pandas as pd
@@ -25,11 +23,13 @@ def get_files(arguments):
         hg38_dataframe: dataframe containing the chromosome, start, end and Gene_id of the CDS regions in the
         GRCh38 intersect file.
     """
+    print("Reading files", "\n")
+
     column_names = ["Chromosome", "Start", "End", "Gene_id"]
+
     # Turns the two bed files into pandas dataframes
     t2t_dataframe = pd.read_csv(arguments.T2T_intersected_CDS_Only, sep="\t", encoding="utf-8", names=column_names)
     hg38_dataframe = pd.read_csv(arguments.GRCh38_intersected_CDS_only, sep="\t", encoding="utf-8", names=column_names)
-    print(t2t_dataframe)
 
     # Ensure each gene_id with overlapping CDS appears only once in the dataframe to avoid duplicate counts.
     t2t_dataframe = t2t_dataframe.drop_duplicates(subset="Gene_id")
@@ -50,8 +50,6 @@ def get_files(arguments):
 
     return t2t_dataframe, hg38_dataframe
 
-def normalize_Y_genes(gene_name):
-    return re.sub(r"_[1-9]", "",  gene_name)
 
 def sort_files(t2t_dataframe, hg38_dataframe):
     """
@@ -80,13 +78,12 @@ def sort_files(t2t_dataframe, hg38_dataframe):
         GRCh38_unique_low_coverage_regions_genes_length (dataframe):dataframe containing gene_ids with
         coding sequences located exclusively in low coverage regions of GRCh38.
     """
-    t2t_dataframe["Gene_id"] = t2t_dataframe["Gene_id"].apply(normalize_Y_genes)
-    hg38_dataframe["Gene_id"] = hg38_dataframe["Gene_id"].apply(normalize_Y_genes)
-
     # For each gene_id in the dataframe, checks if it exists in the other dataframe and adds a True/False column to
     # indicate the result
     t2t_dataframe["Gene_id_in_GRCh38"] = t2t_dataframe["Gene_id"].isin(hg38_dataframe["Gene_id"])
     hg38_dataframe["Gene_id_in_T2T"] = hg38_dataframe["Gene_id"].isin(t2t_dataframe["Gene_id"])
+
+    print("Comparing the GeneIDs", "\n")
 
     # Creates a dataframe with gene_ids where the newly added column is True
     # This dataframe includes gene_ids with coding sequences in low coverage regions for both reference genomes
@@ -142,6 +139,8 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
     # Reads the files with the segmental duplications and turns them into dataframes, also adds comments
     t2t_Segmental_Duplications = pd.read_csv(arguments.SD_T2T, sep="\t", encoding="utf-8", names=column_names)
     hg38_Segmental_Duplications = pd.read_csv(arguments.SD_GRCh38, sep="\t", encoding="utf-8", names=column_names)
+
+    print("Finding overlap between the segmental duplications and the low coverage regions", "\n")
 
     def finding_overlaps_low_coverage_SD(dataframe_1, dataframe_2, suffix1="_df1", suffix2="_df2"):
         """
@@ -202,10 +201,7 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
     non_overlapping_GRCh38_genes = (GRCh38_unique_low_coverage_regions_dataframe[
         ~GRCh38_unique_low_coverage_regions_dataframe["Gene_id"].isin(filtered_hg38_df["Gene_id"])])
 
-    print(filtered_hg38_df["Gene_id"].unique())
-    print(non_overlapping_GRCh38_genes["Gene_id"].unique())
-    print(filtered_t2t_df["Gene_id"].unique())
-    print(non_overlapping_t2t_genes["Gene_id"].unique())
+
     # Gives the dataframe with the low coverage regions and Gene_ids in both reference genomes and
     # the dataframe with the segmental duplications in the T2T reference genome to the
     # finding_overlaps_low_coverage_SD function. So, that it can find the low coverage regions which overlap with
@@ -269,6 +265,8 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
     :return:
         The barplot is saved as Coding_Sequences_in_low_coverage_regions.png
     """
+    print("Making the barplot", "\n")
+
     # Makes matplotlib work on the server.
     matplotlib.use("Agg")
 
@@ -312,7 +310,7 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
                     textcoords="offset points",
                     ha="center",
                     va="center",
-                    fontsize=8)
+                    fontsize=7)
 
     # Makes and sets the y_label
     ax.set_ylabel("Amount of genes")
@@ -323,6 +321,7 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
 
     # Saves the barplot into a png file
     plt.savefig("Coding_Sequences_in_low_coverage_regions.png")
+    print("The barplot is made and saved as Coding_Sequences_in_low_coverage_regions.png")
     # plt.show()
 
 
@@ -363,7 +362,6 @@ def write_to_file(arguments, common_genes, t2t_unique_genes, GRCh38_unique_genes
     non_overlapping_t2t_genes.to_csv(arguments.non_SD_overlapping_genes_T2T, index=False, sep="\t")
 
     non_overlapping_GRCh38_genes.to_csv(arguments.non_SD_overlapping_genes_Hg38, index=False, sep="\t")
-
 
 def main(args):
     t2t_dataframe, hg38_dataframe = get_files(args)
@@ -415,8 +413,12 @@ if __name__ == "__main__":
                         help="Path to the file containing the known segmental duplications in the T2T reference genome")
     parser.add_argument("SD_GRCh38",
                         help="Path to the file containing the segmental duplications in the GRCh38 reference genome")
-    parser.add_argument("non_SD_overlapping_genes_T2T")
-    parser.add_argument("non_SD_overlapping_genes_Hg38")
+    parser.add_argument("non_SD_overlapping_genes_T2T",
+                        help="An empty file where the low coverage genes which don't overlap with an "
+                             "segmental duplication in the T2T reference genome will be sent to")
+    parser.add_argument("non_SD_overlapping_genes_Hg38",
+                        help="An empty file where the low coverage genes which don't overlap with an "
+                             "segmental duplication in the GRCh38 reference genome will be sent to")
 
     args = parser.parse_args()
     main(args)
