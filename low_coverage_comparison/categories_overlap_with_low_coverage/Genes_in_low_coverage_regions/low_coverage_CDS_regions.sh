@@ -31,10 +31,11 @@ grep "CDS" "$T2T_RefSeq_file" | awk -F '\t' '{split($9, a, "gene_id \""); split(
 grep "CDS" "$GRCh38_RefSeq_file" | awk -F '\t' '{split($9, a, "gene_id \""); split(a[2], b, "\""); print $1, $4, $5, b[1]}' OFS='\t' > "$GRCh38_CDS_genes"
 echo "The coding sequence rows have been obtained and sent to: $T2T_CDS_genes , $GRCh38_CDS_genes"
 
-# Step 3: Getting the rows with the Gene_id's which are in the other RefSeq file.
-# This is done to stop the difference from triggering due to a name difference.
-awk '{print $4}' "$GRCh38_CDS_genes" | uniq | grep -Fw -f -  "$T2T_CDS_genes" | sort -k1,1V -k2,2n > "$T2T_CDS_GeneID_Overlapping"
-awk '{print $4}' "$T2T_CDS_genes"  | uniq | grep -Fw -f -  "$GRCh38_CDS_genes" | sort -k1,1V -k2,2n > "$GRCh38_CDS_GeneID_Overlapping"
+# Step 3: Getting the rows with the Gene_id's which are in the other RefSeq file. # The -Fw s done to stop the difference from triggering due to a slight difference.
+# Command removes the _1 behind genes on the Y chromosome and of all the other genes. So GRCh38 does it too even though their Y genes don't have a _1.
+# This is done to get the genes on the Y chromosomes even though they have a slight name difference. The cut removes the duplicate gene_ID containing the _1
+awk '{gsub(/_1$/, "", $4); print $4 "\t" $0}' "$T2T_CDS_genes" | grep -Fwf <(awk '{print $4}' "$GRCh38_CDS_genes"| sort | uniq) | cut -f2- > "$T2T_CDS_GeneID_Overlapping"
+awk '{gsub(/_1$/, "", $4); print $4 "\t" $0}' "$GRCh38_CDS_genes" | grep -Fwf <(awk '{print $4}' "$T2T_CDS_genes"| sort | uniq) | cut -f2- > "$GRCh38_CDS_GeneID_Overlapping"
 echo "The rows with the Gene_ids which are in both files are gotten and sent to: $T2T_CDS_GeneID_Overlapping , $GRCh38_CDS_GeneID_Overlapping"
 
 # Step 4: Intersecting the regions from the RefSeq files and their Gene_id's with the low coverage regions found in the
