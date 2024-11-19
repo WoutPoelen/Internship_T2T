@@ -38,6 +38,10 @@ awk '{gsub(/_1$/, "", $4); print $4 "\t" $0}' "$T2T_CDS_genes" | grep -Fwf <(awk
 awk '{gsub(/_1$/, "", $4); print $4 "\t" $0}' "$GRCh38_CDS_genes" | grep -Fwf <(awk '{print $4}' "$T2T_CDS_genes"| sort | uniq) | cut -f2- > "$GRCh38_CDS_GeneID_Overlapping"
 echo "The rows with the Gene_ids which are in both files are gotten and sent to: $T2T_CDS_GeneID_Overlapping , $GRCh38_CDS_GeneID_Overlapping"
 
+# Makes sure that the file is tab seperated
+sed -i 's/ \+/\t/g' "$T2T_CDS_GeneID_Overlapping"
+sed -i 's/ \+/\t/g' "$GRCh38_CDS_GeneID_Overlapping"
+
 # Step 4: Intersecting the regions from the RefSeq files and their Gene_id's with the low coverage regions found in the
 # categorical file.
 bedtools intersect -a "$T2T_CDS_GeneID_Overlapping" -b "$T2T_filtered_categorical_file" | bedtools sort -i - | bedtools merge -d 5 -c 4 -o distinct -i - |  uniq > "$T2T_intersected_CDS"
