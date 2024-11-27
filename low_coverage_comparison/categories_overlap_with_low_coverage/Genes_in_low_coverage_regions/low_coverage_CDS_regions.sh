@@ -28,7 +28,7 @@ echo "The low average coverage regions that overlap with a coding sequence have 
 
 # Step 2: Getting the CDS regions with their gene_id from the RefSeq files
 grep "CDS" "$T2T_RefSeq_file" | awk -F '\t' '{split($9, a, "gene_id \""); split(a[2], b, "\""); print $1, $4, $5, b[1]}' OFS='\t' > "$T2T_CDS_genes"
-grep "CDS" "$GRCh38_RefSeq_file" | awk '$1 !~ /_/' | awk -F '\t' '{split($9, a, "gene_id \""); split(a[2], b, "\""); print $1, $4, $5, b[1]}' OFS='\t' > "$GRCh38_CDS_genes"
+grep "CDS" "$GRCh38_RefSeq_file" | awk '$1 ~ /^chr([0-9]+|X|Y)$/' | awk -F '\t' '{split($9, a, "gene_id \""); split(a[2], b, "\""); print $1, $4, $5, b[1]}' OFS='\t' > "$GRCh38_CDS_genes"
 echo "The coding sequence rows have been obtained and sent to: $T2T_CDS_genes , $GRCh38_CDS_genes"
 
 # Step 3: Getting the rows with the Gene_id's which are in the other RefSeq file. # The -Fw s done to stop the difference from triggering due to a slight difference.
