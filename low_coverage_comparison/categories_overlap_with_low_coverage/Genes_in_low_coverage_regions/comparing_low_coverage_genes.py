@@ -31,10 +31,6 @@ def get_files(arguments):
     t2t_dataframe = pd.read_csv(arguments.T2T_intersected_CDS_Only, sep="\t", encoding="utf-8", names=column_names)
     hg38_dataframe = pd.read_csv(arguments.GRCh38_intersected_CDS_only, sep="\t", encoding="utf-8", names=column_names)
 
-    # Ensure each gene_id with overlapping CDS appears only once in the dataframe to avoid duplicate counts.
-    t2t_dataframe = t2t_dataframe.drop_duplicates(subset="Gene_id")
-    hg38_dataframe = hg38_dataframe.drop_duplicates(subset="Gene_id")
-
     # Add _Y to the end of the genes on the Y chromosome, because there are genes that are on both X and Y chromosome,
     # but only on the Y chromosome is it low coverage
     t2t_condition = (t2t_dataframe["Chromosome"] == "chrY")
@@ -42,10 +38,14 @@ def get_files(arguments):
     t2t_dataframe.loc[t2t_condition, "Gene_id"] = t2t_dataframe.loc[t2t_condition, "Gene_id"].astype(str) + "_Y"
     hg38_dataframe.loc[hg38_condition, "Gene_id"] = hg38_dataframe.loc[hg38_condition, "Gene_id"].astype(str) + "_Y"
 
+    # Splits the combined geneIDs that were made in step four in low_coverage_CDS_regions.sh through the bedtools merge.
+    # Making the geneIDs a list containing the geneIDS in that region
     t2t_dataframe["Gene_id"] = t2t_dataframe["Gene_id"].str.split(",")
-    t2t_dataframe = t2t_dataframe.explode("Gene_id")
-
     hg38_dataframe["Gene_id"] = hg38_dataframe["Gene_id"].str.split(",")
+
+    # Makes separate rows for the genes in the lists with multiple geneIDS. This may cause the amount of unique genes to
+    # decrease (if there are multiple combination with the same gene: IGLJ1,IGLL5 and IGLC1,IGLL5)
+    t2t_dataframe = t2t_dataframe.explode("Gene_id")
     hg38_dataframe = hg38_dataframe.explode("Gene_id")
 
     return t2t_dataframe, hg38_dataframe
@@ -71,12 +71,26 @@ def sort_files(t2t_dataframe, hg38_dataframe):
         GRCh38 with every Gene_id only appearing once.
 
     :return:
-        common_low_coverage_regions_genes_length (dataframe): dataframe containing the gene_ids which have
-        coding sequences in low coverage regions in both T2T and GRCh38.
-        t2t_unique_low_coverage_regions_length (dataframe): dataframe containing gene_ids with coding sequences located
-        exclusively in low coverage regions of T2T.
-        GRCh38_unique_low_coverage_regions_genes_length (dataframe):dataframe containing gene_ids with
-        coding sequences located exclusively in low coverage regions of GRCh38.
+        common_low_coverage_regions_genes_length (int): the amount of genes who have a low coverage coding sequence in
+        both reference genomes. Used for the barplot
+        t2t_unique_low_coverage_regions_length (int): the amount of genes who have a low coverage coding sequence in
+        the t2t reference genome. Used for the barplot
+        GRCh38_unique_low_coverage_regions_genes_length (int): the amount of genes who have a low coverage coding
+        sequence in the GRCh38 reference genomes. Used for the barplot
+        common_low_coverage_regions_genes (list): list with the gene_ids who have low coverage coding sequence in both
+        reference genomes. Contains duplicates. Used for writing to the file.
+        t2t_unique_low_coverage_regions_genes (list): list with the gene_ids who have low coverage coding sequence in
+        the T2T reference genome. Contains duplicates. Used for writing to the file.
+        GRCh38_unique_low_coverage_regions_genes (list): list with the gene_ids who have low coverage coding sequence in
+        the GRCh38 reference genome. Contains duplicates. Used for writing to the file.
+        common_low_coverage_regions_genes_dataframe (dataframe): dataframe containing the rows with the gene_ids who
+        have low coverage coding sequence in both reference genomes. Contains duplicates. Used for the processing.
+        t2t_unique_low_coverage_regions_dataframe (dataframe): dataframe containing the rows with the gene_ids who
+        have low coverage coding sequence in the T2T reference genomes. Contains duplicates. Used for the processing.
+        GRCh38_unique_low_coverage_regions_dataframe: dataframe containing the rows with the gene_ids who
+        have low coverage coding sequence in the GRCh38 reference genomes. Contains duplicates. Used for the processing
+
+
     """
     # For each gene_id in the dataframe, checks if it exists in the other dataframe and adds a True/False column to
     # indicate the result
@@ -89,19 +103,23 @@ def sort_files(t2t_dataframe, hg38_dataframe):
     # This dataframe includes gene_ids with coding sequences in low coverage regions for both reference genomes
     common_low_coverage_regions_genes_dataframe = t2t_dataframe[t2t_dataframe["Gene_id_in_GRCh38"]]
     common_low_coverage_regions_genes = list(common_low_coverage_regions_genes_dataframe["Gene_id"])
-    common_low_coverage_regions_genes_length = len(list(common_low_coverage_regions_genes_dataframe["Gene_id"]))
+    common_low_coverage_regions_genes_length = len(list(common_low_coverage_regions_genes_dataframe["Gene_id"]
+                                                        .unique()))
 
     # Creates a dataframe with gene_ids where newly added column in the T2T dataframe is False
     # This dataframe includes gene_ids with coding sequences in low coverage region that are in T2T only
     t2t_unique_low_coverage_regions_dataframe = t2t_dataframe[~t2t_dataframe["Gene_id_in_GRCh38"]]
     t2t_unique_low_coverage_regions_genes = list(t2t_unique_low_coverage_regions_dataframe["Gene_id"])
-    t2t_unique_low_coverage_regions_length = len(list(t2t_unique_low_coverage_regions_dataframe["Gene_id"]))
+    t2t_unique_low_coverage_regions_length = len(list(t2t_unique_low_coverage_regions_dataframe["Gene_id"]
+                                                      .unique()))
+
 
     # Creates a dataframe with gene_ids where newly added column in the GRCh38 dataframe is False
     # This dataframe includes gene_ids with coding sequences in low coverage region that are in GRCh38 only
     GRCh38_unique_low_coverage_regions_dataframe = hg38_dataframe[~hg38_dataframe["Gene_id_in_T2T"]]
     GRCh38_unique_low_coverage_regions_genes = list(GRCh38_unique_low_coverage_regions_dataframe["Gene_id"])
-    GRCh38_unique_low_coverage_regions_genes_length = len(list(GRCh38_unique_low_coverage_regions_dataframe["Gene_id"]))
+    GRCh38_unique_low_coverage_regions_genes_length = len(list(GRCh38_unique_low_coverage_regions_dataframe["Gene_id"]
+                                                               .unique()))
 
     return (common_low_coverage_regions_genes_length, t2t_unique_low_coverage_regions_length,
             GRCh38_unique_low_coverage_regions_genes_length, common_low_coverage_regions_genes,
@@ -133,6 +151,10 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
         coding sequences and segmental duplications in the GRCh38 reference genome.
         unique_common_SD_overlap_gen (int): integer showing the amount of gene_ids which have low coverage regions
         located in coding sequences and segmental duplications in both reference genomes.
+        non_overlapping_t2t_genes (dataframe): dataframe containing the gene_IDs whose low coverage coding sequence
+        doesn't overlap with a segmental duplication.
+        non_overlapping_GRCh38_genes: dataframe containing the gene_IDs whose low coverage coding sequence
+        doesn't overlap with a segmental duplication.
     """
     column_names = ["Chromosome", "Start", "End"]
 
@@ -162,17 +184,14 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
         # Merges the first dataframe with the second on the chromosome with only the data that overlaps
         merged_dataframe = pd.merge(dataframe_1, dataframe_2, on="Chromosome", how="inner", suffixes=(suffix1, suffix2))
 
-        # Gets the rows where the start of the coding sequence is higher than the start of a segmental duplication and
-        # lower than the end of a segmental duplication or where the end of the coding sequence is higher than
-        # the start of a segmental duplication and lower than the end of a segmental duplication.
+        # Gets the rows where the start of the coding sequence is lower or equal to the end of the segmental duplication
+        # (if this is not the case then the coding sequence is to the right of the segmental duplication) and where
+        # the end of the coding sequence is higher or equal to the start of the segmental duplication (if this is not
+        # the case then the coding sequence is to the left of the segmental duplication). These obtained rows overlap
+        # with a segmental duplication
         overlap_dataframe = merged_dataframe[
-            (
-                    (merged_dataframe[f"Start{suffix1}"] <= merged_dataframe[f"Start{suffix2}"]) &
-                    (merged_dataframe[f"Start{suffix1}"] >= merged_dataframe[f"End{suffix2}"])
-        ) | (
-                (merged_dataframe[f"End{suffix1}"] >= merged_dataframe[f"Start{suffix2}"]) &
-                (merged_dataframe[f"End{suffix1}"] <= merged_dataframe[f"End{suffix2}"])
-        )
+            (merged_dataframe[f"Start{suffix1}"] <= merged_dataframe[f"End{suffix2}"]) &
+            (merged_dataframe[f"End{suffix1}"] >= merged_dataframe[f"Start{suffix2}"])
         ]
 
         return overlap_dataframe
@@ -185,9 +204,21 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
                                                        suffix1="_low_coverage_region",
                                                        suffix2="_SD")
 
-    # Gets the non-segmental duplication genes
-    non_overlapping_t2t_genes = (t2t_unique_low_coverage_regions_dataframe[
-        ~t2t_unique_low_coverage_regions_dataframe["Gene_id"].isin(filtered_t2t_df["Gene_id"])])
+    # This merges the dataframe with all the genesIDs in GRCh38 with the dataframe containing the geneIDS that overlap
+    # with a segmental duplication. Made to get the geneIDs which don't overlap with a segmental duplication
+    merged_T2T = pd.merge(t2t_unique_low_coverage_regions_dataframe,
+                             filtered_t2t_df[['Chromosome', 'Start_low_coverage_region', 'End_low_coverage_region',
+                                               'Gene_id']],
+                             left_on=['Chromosome', 'Start', 'End', 'Gene_id'],
+                             right_on=['Chromosome', 'Start_low_coverage_region', 'End_low_coverage_region', 'Gene_id'],
+                             how='left',
+                             indicator=True)
+
+    # Gets the rows of the genes whose coding sequence don't overlap with a segmental duplication by looking which
+    # rows are only in the all geneIDs dataframe and dropping which are in both dataframes (all and overlapping with
+    # a segmental duplication)
+    non_overlapping_t2t_genes = merged_T2T[merged_T2T['_merge'] == 'left_only'].drop('_merge', axis=1)
+
 
     # Gives the dataframe with the low coverage regions and the dataframe with the segmental duplications in the GRCh38
     # reference genome to the finding_overlaps_low_coverage_SD function. So, that it can find the low coverage regions
@@ -197,10 +228,20 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
                                                         suffix1="_low_coverage_region",
                                                         suffix2="_SD")
 
-    # Gets the non-overlapping genes
-    non_overlapping_GRCh38_genes = (GRCh38_unique_low_coverage_regions_dataframe[
-        ~GRCh38_unique_low_coverage_regions_dataframe["Gene_id"].isin(filtered_hg38_df["Gene_id"])])
+    # This merges the dataframe with all the genesIDs in GRCh38 with the dataframe containing the geneIDS that overlap
+    # with a segmental duplication. Made to get the geneIDs which don't overlap with a segmental duplication
+    merged_GRCh38 = pd.merge(GRCh38_unique_low_coverage_regions_dataframe,
+                      filtered_hg38_df[['Chromosome', 'Start_low_coverage_region', 'End_low_coverage_region',
+                                        'Gene_id']],
+                      left_on=['Chromosome', 'Start', 'End', 'Gene_id'],
+                      right_on=['Chromosome', 'Start_low_coverage_region', 'End_low_coverage_region', 'Gene_id'],
+                      how='left',
+                      indicator=True)
 
+    # Gets the rows of the genes whose coding sequence don't overlap with a segmental duplication by looking which
+    # rows are only in the all geneIDs dataframe and dropping which are in both dataframes (all and overlapping with
+    # a segmental duplication)
+    non_overlapping_GRCh38_genes = merged_GRCh38[merged_GRCh38['_merge'] == 'left_only'].drop('_merge', axis=1)
 
     # Gives the dataframe with the low coverage regions and Gene_ids in both reference genomes and
     # the dataframe with the segmental duplications in the T2T reference genome to the
@@ -215,25 +256,27 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
     merged_dataframe_common_t2t.columns = ["Chromosome", "Start", "End", "Gene_id", "Gene_id_in_GRCh38", "Start_T2T",
                                            "End_T2T"]
 
-    # # Gives the merged dataframe with the low coverage regions and Gene_ids which overlap with Segmental duplications from
-    # the T2T reference genome and the dataframe with the segmental duplications in the GRCh38 reference genome to the
-    # finding_overlaps_low_coverage_SD function. So, that it can find the low coverage regions which overlap with
+    # Gives the merged dataframe with the low coverage regions and Gene_ids which overlap with Segmental duplications
+    # from the T2T reference genome and the dataframe with the segmental duplications in the GRCh38 reference genome to
+    # the finding_overlaps_low_coverage_SD function. So, that it can find the low coverage regions which overlap with
     # the segmental duplications and puts them into a dataframe
     merged_dataframe_with_Hg38 = finding_overlaps_low_coverage_SD(merged_dataframe_common_t2t,
                                                                   hg38_Segmental_Duplications,
                                                                   suffix1="_common_low_coverage",
                                                                   suffix2="_SD_GRCh38")
 
-    # Combines the unique gene_IDS from both merged dataframes without a gene_id getting put in multiple times due to it
-    # being made an array
-    common_low_coverage_SD_overlap = numpy.concatenate([merged_dataframe_common_t2t["Gene_id"].unique(),
-                                                        merged_dataframe_with_Hg38["Gene_id"].unique()], axis=0)
+    # Combines the unique SD overlapping gene_IDS from both merged dataframes without a gene_id getting duplicated. It
+    # counts a geneID overlapping if it overlaps with a segmental duplication in one or both reference genomes.
+    common_low_coverage_SD_overlap = numpy.unique(numpy.concatenate([merged_dataframe_common_t2t["Gene_id"]
+                                                                    .unique(),
+                                                                    merged_dataframe_with_Hg38["Gene_id"].unique()]
+                                                                    ,axis=0))
 
     # Gets the amount of unique gene_IDS which have low coverage regions in coding sequences which overlap with a
     # segmental duplication
     filtered_t2t_dataframe_length = len(filtered_t2t_df["Gene_id"].unique())
     filtered_hg38_dataframe_length = len(filtered_hg38_df["Gene_id"].unique())
-    unique_common_SD_overlap_genes = len(numpy.unique(common_low_coverage_SD_overlap))
+    unique_common_SD_overlap_genes = len(common_low_coverage_SD_overlap)
 
     return (filtered_t2t_dataframe_length, filtered_hg38_dataframe_length, unique_common_SD_overlap_genes,
             non_overlapping_t2t_genes, non_overlapping_GRCh38_genes)
@@ -273,11 +316,11 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
     # Makes subplots
     fig, ax = plt.subplots()
 
-
+    # The labels for the x and the legend
     xlables = ["shared", "only LC in T2T", "only LC in GRCh38"]
     labels = ["low coverage in both", "low coverage in T2T", "low coverage in GRCh38"]
 
-    # Makes the barplot
+    # Makes the barplot that shows the amount of genes which have a coding sequence overlap with a low coverage region
     bars = ax.bar(xlables,
                   [common_low_coverage_regions_genes_length,
                    t2t_unique_low_coverage_regions_length,
@@ -286,12 +329,14 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
                   alpha=0.5,
                   label=labels)
 
+    # Makes an additional barplot containing the amount of genes whose low coverage coding sequence overlap with a
+    # segmental duplication
     SD_bars = ax.bar(xlables, [unique_common_SD_overlap_genes, filtered_t2t_dataframe_length,
                      filtered_hg38_dataframe_length], color=["black", "black", "black"], alpha=0.8,
                      label="Segmental Duplication overlap")
 
-    # Adds variable values to their respective bar plots by calculating the midpoint of each bar and placing the values
-    # there.
+    # Adds amount of total genes per category to their respective bar plots by calculating the midpoint of each bar and
+    # placing the values there.
     for bar in bars:
         height = bar.get_height()
         ax.annotate("{}".format(height),
@@ -302,6 +347,8 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
                     va="center",
                     fontsize="medium")
 
+    # Adds amount of genes whose coding sequence overlap with a segmental duplication to their respective bar plots by
+    # calculating the midpoint of each bar and placing the values there.
     for bar in SD_bars:
         height = bar.get_height()
         ax.annotate("{}".format(height),
@@ -310,7 +357,7 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
                     textcoords="offset points",
                     ha="center",
                     va="center",
-                    fontsize=7)
+                    fontsize=6.5)
 
     # Makes and sets the y_label
     ax.set_ylabel("Amount of genes")
@@ -339,14 +386,19 @@ def write_to_file(arguments, common_genes, t2t_unique_genes, GRCh38_unique_genes
         in a low coverage region in GRCh38 will be written to.
         common_genes (list): list containing the geneIDs of the genes which have CDS
         in a low coverage region in both reference genomes.
-        t2t_unique_genes (list): list containing the geneIDs of the genes which have coding CDS
+        t2t_unique_genes (list): list containing the geneIDs of the genes which have a CDS
         in a low coverage region in T2T.
-        GRCh38_unique_genes (list): list containing the geneIDs of the genes which have coding CDS
+        GRCh38_unique_genes (list): list containing the geneIDs of the genes which have a CDS
         in a low coverage region in GRCh38.
+        non_overlapping_t2t_genes (dataframe): dataframe containing the genes whose low coverage CDS don't overlap
+        with a segmental duplication
+        non_overlapping_GRCh38_genes (dataframe): dataframe containing the genes whose low coverage CDS don't overlap
+        with a segmental duplication
 
     :return:
         nothing
     """
+    # Opens the files and writes the list to that specific file
     with open(arguments.Low_coverage_genes_shared, "w") as shared_file:
         for gene in common_genes:
             shared_file.write("{}\n".format(gene))
@@ -359,6 +411,7 @@ def write_to_file(arguments, common_genes, t2t_unique_genes, GRCh38_unique_genes
         for gene in GRCh38_unique_genes:
             GRCh38_file.write("{}\n".format(gene))
 
+    # Opens the empty bed file and writes the dataframes to that file
     non_overlapping_t2t_genes.to_csv(arguments.non_SD_overlapping_genes_T2T, index=False, sep="\t")
 
     non_overlapping_GRCh38_genes.to_csv(arguments.non_SD_overlapping_genes_Hg38, index=False, sep="\t")
