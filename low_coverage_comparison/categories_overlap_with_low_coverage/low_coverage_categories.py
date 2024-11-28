@@ -98,7 +98,7 @@ def making_barplot(t2t_count_values, grch38_count_values):
     
     # Combines the two dictionaries to make it easier to plot the grouped barplot
     complete_dictionary = {"T2T": t2t_count_values, "GRCh38": grch38_count_values}
-    print(complete_dictionary)
+
     # Makes a list of the categories to use as ticks for the plot
     categories = list(complete_dictionary["T2T"].keys())
 
@@ -107,14 +107,11 @@ def making_barplot(t2t_count_values, grch38_count_values):
     t2t_values_list = [complete_dictionary["T2T"][category] for category in categories]
     grch38_values_list = [complete_dictionary["GRCh38"][category] for category in categories]
 
-    print(sum(t2t_values_list))
-    print(sum(grch38_values_list))
-
     # Give an x-value to the bar plots, so the bar plots won't stack on top of each other when added or subtracted from
     x = np.arange(len(categories))
 
     # Makes matplotlib work on the server.
-    # matplotlib.use("Agg")
+    matplotlib.use("Agg")
 
     # Makes subplots
     fig, ax = plt.subplots(figsize=(8, 6))
