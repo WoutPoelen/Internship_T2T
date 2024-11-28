@@ -181,7 +181,7 @@ def plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38
 
     # Indicates that two plots (ax1, ax2) will be made, that they will be next to each other (2 columns) and that
     # they share the same y-axis.
-    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(10,8))
+    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(10,4.5))
 
     # The titles for the two plots. In a dictionary that is later given to a for loop that sets everything up.
     titles = {ax1: "SV indel balance in GRCh38", ax2: "SV indel balance in T2T"}
@@ -193,14 +193,14 @@ def plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38
     # Setting up the first plot. This has the lengths list as the x-axis, amount of insertions and deletions from the
     # t2t file separate on the y-axis, marker to get a dot when the x and y-axis cross, color to dictate the color and
     # label to get that string in the legend for that plot (line in this case.)
-    ax1.plot(lengths, hg38_ins_distances, marker= "o", color="blue", label="INS")
-    ax1.plot(lengths, hg38_del_distances, marker="o", color="red", label="DEL")
+    ax1.plot(lengths, hg38_ins_distances, marker= "o", color="green", label="INS", markerfacecolor="none")
+    ax1.plot(lengths, hg38_del_distances, marker="o", color="red", label="DEL", markerfacecolor="none")
 
     # Setting up the second plot. This has the lengths list as the x-axis, amount of insertions and deletions from the
     # Hg38 file separate on the y-axis, marker to get a dot when the x and y-axis cross, color to dictate the color and
     # label to get that string in the legend for that plot (line in this case).
-    ax2.plot(lengths, t2t_ins_distances, marker= "o", color="blue", label="INS")
-    ax2.plot(lengths, t2t_del_distances, marker= "o", color="red",label="DEL")
+    ax2.plot(lengths, t2t_ins_distances, marker= "o", color="green", label="INS", markerfacecolor="none")
+    ax2.plot(lengths, t2t_del_distances, marker= "o", color="red",label="DEL", markerfacecolor="none")
 
     # Set the y-labels for both of the plots.
     ax1.set_ylabel("Number of variants in GRCh38")
@@ -208,7 +208,7 @@ def plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38
 
     # Setting the limit of the y_axis. Use the highest count from the previous function to have the limit change with
     # each dataset.
-    ax.set_ylim(0, highest_count + 1000)
+    ax.set_ylim(0, highest_count + 500)
 
     # Loops through both of the plots and adds the following things the plots: the title corresponding with the plot
     # from the dictionary, a legend, a grid, rotated the x-values 40 degrees and the x-label
@@ -249,7 +249,7 @@ def make_total_barplot(total_t2t_insertions, total_t2t_deletions, total_hg38_ins
 
     # Indicates that two plots (ax1, ax2) will be made, that they will be next to each other (2 columns) and that
     # they share the same y-axis.
-    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(8, 6))
+    fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True, figsize=(5, 5))
 
     # The titles for the two plots. In a dictionary that is later given to a for loop that sets everything up.
     x_labels = {ax1: "GRCh38", ax2: "T2T"}
@@ -257,11 +257,11 @@ def make_total_barplot(total_t2t_insertions, total_t2t_deletions, total_hg38_ins
     # To return the current active axes. Used to set extra things for the plots up.
     ax = plt.gca()
 
-    ax1.bar("DEL", total_hg38_deletions, width=0.4, color="red")
-    ax1.bar("INS", total_hg38_insertions, width=0.4, color="blue")
+    ax1.bar("DEL", total_hg38_deletions, width=0.95, color="red")
+    ax1.bar("INS", total_hg38_insertions, width=0.95, color="green")
 
-    ax2.bar("DEL", total_t2t_deletions, width=0.4, color="red")
-    ax2.bar("INS", total_t2t_insertions, width=0.4, color="blue")
+    ax2.bar("DEL", total_t2t_deletions, width=0.95, color="red")
+    ax2.bar("INS", total_t2t_insertions, width=0.95, color="green")
 
     # Set the y-labels for both of the plots.
     ax1.set_ylabel("Total number of structural variants in GRCh38")
