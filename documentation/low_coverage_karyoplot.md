@@ -26,7 +26,7 @@ BiocManager::install("KaryoploteR")
 
 **GRCh38 karyoplot:**
 1. Copy the [karyoplot_GRCh38.R](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/r/karyoplot_GRCh38.R) R script and paste it in Rstudio.
-2. Import the low coverage GRCh38 bed file (made in [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py))  as a dataset. This will automatically make it a table which is necessary for the script to work.
+2. Import the low coverage GRCh38 bed file (made in [obtain_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/python/obtaining_low_coverage_regions.py))  as a dataset. This will automatically make it a table which is necessary for the script to work.
 3. Change the following lines to the name of the GRCh38 low coverage file:
 ```
 (chr=GRCh38_low_coverage_HG002["V1"],
@@ -42,7 +42,7 @@ y=GRCh38_low_coverage_HG002["V4"]))
 
 The T2T reference genome isn't available in KaryoplotR (version 1.30.0). So a custom reference genome needs to be created.
 1. Copy the [karyoplot_T2T.R](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/r/karyoplot_T2T.R) R script and paste it in Rstudio
-2. Import the low coverage T2T bed file (made in [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py)) as a dataset. This will automatically make it a table which is necessary for the script to work.
+2. Import the low coverage T2T bed file (made in [obtain_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/python/obtaining_low_coverage_regions.py)) as a dataset. This will automatically make it a table which is necessary for the script to work.
 3. Change the following lines to the name of the T2T low coverage file:
 ```
 chr=T2T_low_coverage_HG002["V1"], 
