@@ -57,7 +57,7 @@ chr=chromosome_report_t2t$UCSC.style.name,
 start=0, 
 end=chromosome_report_t2t$Seq.length
 ```
-6. Get the centromere locations by importing the bed file made in step 4 of the T2T part of [Comparing difficult regions with the low coverage regions](#category)
+6. Get the centromere locations by importing the bed file made in step 4 of the T2T part of [Comparing difficult to sequence regions with the low coverage regions](https://github.com/WoutPoelen/Internship_T2T/blob/main/documentation/separating_low_coverage_into_categories.md)
 7. Change the following lines to the name of the Censat centromere file:
 ```
 chr=filtered_centromeres_CenSat$V1,
