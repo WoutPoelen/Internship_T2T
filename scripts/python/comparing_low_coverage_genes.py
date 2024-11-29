@@ -38,7 +38,7 @@ def get_files(arguments):
     t2t_dataframe.loc[t2t_condition, "Gene_id"] = t2t_dataframe.loc[t2t_condition, "Gene_id"].astype(str) + "_Y"
     hg38_dataframe.loc[hg38_condition, "Gene_id"] = hg38_dataframe.loc[hg38_condition, "Gene_id"].astype(str) + "_Y"
 
-    # Splits the combined geneIDs that were made in step four in low_coverage_CDS_regions.sh through the bedtools merge.
+    # Splits the combined geneIDs that were made in step four in low_coverage_coding_sequence_regions.sh through the bedtools merge.
     # Making the geneIDs a list containing the geneIDS in that region
     t2t_dataframe["Gene_id"] = t2t_dataframe["Gene_id"].str.split(",")
     hg38_dataframe["Gene_id"] = hg38_dataframe["Gene_id"].str.split(",")

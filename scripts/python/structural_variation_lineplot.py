@@ -166,7 +166,7 @@ def plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38
         hg38_del_distances (list): list of the lengths of the deletions found with the hg38 reference genome.
 
     :return:
-        a line plot as SV_indel_comparison.png
+        a line plot as structural_variation_indel_comparison.png
     """
 
     # Makes the plotting work on the server
@@ -220,9 +220,9 @@ def plot_lineplot(t2t_ins_distances, t2t_del_distances, hg38_ins_distances, hg38
         ax.set_xlabel("Length")
 
     # Saves the plot as the given file.
-    plt.savefig("SV_indel_comparison.png", bbox_inches="tight")
+    plt.savefig("structural_variation_indel_comparison.png", bbox_inches="tight")
 
-    print("The line plot is successfully generated and saved in SV_indel_comparison.png")
+    print("The line plot is successfully generated and saved in structural_variation_indel_comparison.png")
     # Makes sure the plot is shown. Commented out because file wouldn't be saved on the server. Get rid of the comment
     # when you want to see the file outside the server
     # plt.show()
