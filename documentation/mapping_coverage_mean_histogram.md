@@ -1,11 +1,11 @@
 ### Comparing the average coverage of 500bp regions 
 
-
+---
 #### Introduction
 This step is performed to create a histogram comparing the difference in average coverage for 500 base-pair regions between 
 two reference genomes, and a scatterplot showing the difference in standard deviation of average coverage between the same regions.
 
-
+---
 #### Steps to perform
 1. Get the same BAM files as used for the mismatch rate if using the same sample as used in that step is desired. Otherwise, use BAM files from another sample that has BAM file from both reference genomes.
 2. Run the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/bash/get_coverage_mean_regions.sh) 
@@ -26,8 +26,12 @@ This histogram also contains the mean and standard deviation of the coverage. Th
 higher than 80 are combined and plotted at the 80+ label.
 6. The file standard_deviation_coverage.png contains the scatterplot.
 
+---
 #### Advised next step
 Plotting the 500bp regions whose read mapping coverage is below a to be calculated threshold in karyoplots
 [low_coverage_karyoplot.md](https://github.com/WoutPoelen/Internship_T2T/tree/main/documentation/low_coverage_karyoplot.md)
-or separating the low coverage regions into four categories depending on their location (Centromeres, coding sequences, 
+
+or
+
+Separating the low coverage regions into four categories depending on their location (Centromeres, coding sequences, 
 transcripts and segmental duplications) [separating-low_coverage_into_categories.md](https://github.com/WoutPoelen/Internship_T2T/tree/main/documentation/separating_low_coverage_into_categories.md).

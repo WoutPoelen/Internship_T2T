@@ -1,9 +1,11 @@
 ### Low coverage comparison with a karyoplot 
 
+---
 #### Introduction
 This step is performed to make karyoplots of the low coverage regions in the GRCh38 and T2T reference genome.
 This is done to get a clearer view of the locations and the amount of low coverage regions in the reference genomes. 
 
+---
 #### Steps to perform
 
 **Obtaining the low coverage regions:**
@@ -67,6 +69,7 @@ end=filtered_centromeres_CenSat$V3)
 8. Run the script.
 9. Export the karyoplot to a specific location.
 
+---
 #### Advised next step
 Separating the low coverage regions into four categories depending on their location
 (Centromeres, coding sequences, transcripts and segmental duplications):

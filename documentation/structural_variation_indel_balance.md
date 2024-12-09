@@ -1,5 +1,6 @@
 ### Calculating and comparing the SV indel balance
 
+---
 #### Introduction
 This step is performed to see if the indel balance is better in the T2T-CHM13 reference genome. 
 This shows the reliability of the new reference genome when used for structural variant calling compared
@@ -7,6 +8,7 @@ to the GRCh38 reference genome. Structural variation in the genome can distort t
 a gene causing genetic differences between the sample and the reference genome in the region to become untrustworthy. 
 This can have a great impact on further steps of genetic analysis and diagnosis.
 
+---
 #### Steps to perform
 
 Follow these steps to create a line plot comparing the indel balance between the GRCh38 and T2T reference genomes, and a bar plot showing the difference in the total number of insertions and deletions between the two genomes:
@@ -28,6 +30,7 @@ python structural_variation_lineplot.py t2t_sv.bed GRCh38_sv.bed intersected_SV_
 4. The file SV_indel_comparison.png contains the line plot.
 5. The file Total_indel_comparison.png contains the barplot.
 
+---
 #### Advised next step
 Getting the mean mapping coverage and plotting it into a histogram 
 [mapping_coverage_mean_histogram.md](https://github.com/WoutPoelen/Internship_T2T/tree/main/documentation/mapping_coverage_mean_histogram.md)

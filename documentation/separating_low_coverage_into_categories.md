@@ -1,5 +1,6 @@
 ### Overlapping regions that are difficult to map and regions with low coverage
 
+---
 #### Introduction
 This step is performed to create a bar plot showing difficult to sequence regions overlap with the low coverage 
 regions. Specifically looking at centromeres, transcripts, coding sequences (CDS), and/or structural duplications. 
@@ -7,6 +8,7 @@ This is done to see the read mapping coverage improved in the coding sequences. 
 important to see if there are genes which improved in the new reference genome. The other three categories are used
 because the also have an impact on the genes which reside in that region.
 
+---
 #### Steps to perform
 
 **Obtaining the low coverage regions:**
@@ -52,5 +54,6 @@ python script T2T_output_categorical.bed GRCh38_output_categorical.bed
 ```
 2. The barplot is saves as low_coverage_categories_barplot.png.
 
+---
 #### Advised next step
 Getting the genes who has a coding sequence overlap with a low coverage region [comparing_low_coverage_coding_sequence.md](https://github.com/WoutPoelen/Internship_T2T/tree/main/documentation/comparing_low_coverage_coding_sequence.md)

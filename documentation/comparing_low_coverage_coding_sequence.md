@@ -1,12 +1,13 @@
 ### Genes of which the coding sequences are in low coverage regions 
 
+---
 #### Introduction
 This step is performed to get the amount of genes whose coding sequence overlap with a low coverage region.
 This is done to see if there are genes whose read mapping improved in these sequence. Since they are the part of the 
 gene which actually codes for the protein and where a variant can thus have a significant impact on the function of the 
 gene.  
 
-
+---
 #### Steps to perform
 1. Run the [low_coverage_coding_sequence_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/bash/low_coverage_coding_sequence_regions.sh) bash script with these files in the same order(some files get written to during the execution of the script and are given as empty files):
 
@@ -38,5 +39,6 @@ python comparing_low_coverage_genes.py T2T_intersected_CDS.bed GRCh38_intersecte
 3. The plot is saved as Coding_Sequences_in_low_coverage_regions.png
 4. The genes which have a coding sequence which overlap with a low coverage region in both files are written to shared_genes.txt. The genes with coding sequences that overlap exclusively with low coverage regions in T2T are recorded in T2T_unique.txt. The genes with coding sequences that overlap exclusively with low coverage regions in GRCh38 are recorded in GRCh38_unique.txt
 
+---
 #### Advised next step
 **Needs to be added**
