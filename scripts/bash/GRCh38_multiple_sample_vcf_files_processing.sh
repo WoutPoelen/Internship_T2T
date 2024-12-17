@@ -59,6 +59,6 @@ done
 for file in "$bcftools_output_directory"/*; do
         filename=$(basename "$file")
         outfile="$bedtools_output_directory/$filename"
-	bedtools intersect -wb -a "$CDS_regions" -b "$file" | sort | uniq > "$outfile"
+	bedtools intersect -wb -a "$file" -b "$CDS_regions" | sort | uniq > "$outfile"
 done
 
