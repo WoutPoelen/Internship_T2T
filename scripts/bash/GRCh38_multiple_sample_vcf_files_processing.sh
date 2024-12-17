@@ -34,6 +34,8 @@ if ! command -v bedtools &> /dev/null; then
     exit 1
 fi
 
+# Loops through the samples and obtains the chromosome, start and end position and the type of the structural variation of the structural variations that are larger than 30 base pairs.
+# It then writes the structural variations to a directory under the same name as the sample
 for file in "$input_directory"/*; do
     	# Extract the filename from the path
     	filename=$(basename "$file" .vcf).bed
@@ -43,6 +45,7 @@ for file in "$input_directory"/*; do
     	bcftools query -f "%CHROM\t%POS\t%INFO/END\t%INFO/SVLEN\t%INFO/SVTYPE\n" -i '(INFO/SVTYPE="DEL" || INFO/SVTYPE="INS") && (INFO/SVLEN > 30 || INFO/SVLEN < -30)' "$file" > "$outfile"
 done
 
+# Loops through the output bed files from the previous loop and intersects the coding sequences in GRCh38 with the structural variants obtain in the previous for loop
 for file in "$bcftools_output_directory"/*; do
         filename=$(basename "$file")
         outfile="$bedtools_output_directory/$filename"
