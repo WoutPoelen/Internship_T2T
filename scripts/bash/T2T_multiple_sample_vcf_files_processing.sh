@@ -1,13 +1,12 @@
 #!/bin/bash
-non_syntenic_regions="/ifs/data/research/projects/wout/projects/wp1_depth/data/HG002_sample/genes_non_syntenic_regions/chm13v2_non_syntenic_regions.bed"
-CDS_regions="/ifs/data/research/projects/wout/projects/wp1_depth/data/HG002_sample/categories_coverage_overlap/comparing_genes/Getting_RefSeq_Only_CDS_Regions/T2T_CDS_RefSeq_only.bed"
+non_syntenic_regions=$1
+CDS_regions=$2
+input_directory=$3
+bcftools_output_directory=$4
+gene_intersect_output_directory=$5
+SV_intersect_output_directory=$6
 
-input_directory="/ifs/data/research/projects/wout/projects/wp1_depth/data/structural_varation_multiple_samples/T2T_VCF_files"
-bcftools_output_directory="/ifs/data/research/projects/wout/projects/wp1_depth/data/structural_varation_multiple_samples/bcftools_output_T2T"
-gene_intersect_output_directory="/ifs/data/research/projects/wout/projects/wp1_depth/data/structural_varation_multiple_samples/non_syntenic_genes"
-SV_intersect_output_directory="/ifs/data/research/projects/wout/projects/wp1_depth/data/structural_varation_multiple_samples/non_syntenic_structural_variants"
-
-# Check if directories exist
+# Check if directories and files exist
 if [ ! -d "$input_directory" ]; then
     echo "Input directory does not exist: $input_directory"
     exit 1
@@ -28,7 +27,15 @@ if [ ! -d "$SV_intersect_output_directory" ]; then
     exit 1
 fi
 
+if [ ! -f "$non_syntenic_regions" ]; then
+    echo "non syntenic file does not exist: $non_syntenic_regions"
+    exit 1
+fi
 
+if [ ! -f "$CDS_regions" ]; then
+    echo "coding sequences file does not exist: $CDS_regions"
+    exit 1
+fi
 
 # Check if required tools are available
 if ! command -v bcftools &> /dev/null; then
