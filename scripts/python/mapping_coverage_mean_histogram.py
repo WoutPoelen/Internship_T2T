@@ -118,24 +118,6 @@ def make_histogram( t2t_standard_deviation, hg38_standard_deviation, t2t_mean, h
     plt.bar(80, height=t2t_high_coverage, width=1, color="blue", alpha=0.5)
     plt.bar(80, height=hg38_high_coverage, width=1, color="green", alpha=0.25)
 
-    # Adds a line for both the t2t mean and the hg38 mean
-    ax.axvline(t2t_mean,  color="red", label="T2T mean", linewidth=1, linestyle="--")
-    ax.axvline(hg38_mean, color="grey", label="HG38_mean", linewidth=1, linestyle="--")
-
-    # Adds a line for one standard deviation above the mean and another one for one standard deviation below the mean
-    # of the T2T file
-    ax.axvline((t2t_mean + t2t_standard_deviation), color="black", label="T2T standard deviation", linewidth=1,
-               linestyle="--")
-    ax.axvline((t2t_mean - t2t_standard_deviation), color="black", linewidth=1,
-               linestyle="--")
-
-    # Adds a line for one standard deviation above the mean and another one for one standard deviation below the mean
-    # of the Hg38 file
-    ax.axvline((hg38_mean + hg38_standard_deviation), color="orange", label="GRCh38 standard deviation", linewidth=1,
-               linestyle="--")
-    ax.axvline((hg38_mean - hg38_standard_deviation), color="orange", linewidth=1,
-               linestyle="--")
-
     # Makes a legend in the upper right
     plt.legend(loc="upper right", prop={"size": 8})
 
