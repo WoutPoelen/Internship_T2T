@@ -283,16 +283,14 @@ def compare_with_SD(arguments, t2t_unique_low_coverage_regions_dataframe, GRCh38
 
 
 
-def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_coverage_regions_length,
+def make_barplot(t2t_unique_low_coverage_regions_length,
                  GRCh38_unique_low_coverage_regions_length, filtered_t2t_dataframe_length,
-                 filtered_hg38_dataframe_length, unique_common_SD_overlap_genes):
+                 filtered_hg38_dataframe_length):
     """
     This function makes the barplot where the length of the lists made in the previous function are plotted against
     each other.
 
     :param:
-        common_low_coverage_regions_genes_length (int): integer showing the amount ofe gene_ids which have
-        coding sequences in low coverage regions in both T2T and GRCh38.
         t2t_unique_low_coverage_regions_length (int): integer showing gene_ids with coding sequences located
         exclusively in low coverage regions of T2T.
         GRCh38_unique_low_coverage_regions_length (int): integer showing gene_ids with coding sequences located
@@ -301,9 +299,6 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
         coding sequences and segmental duplications in the T2T reference genome.
         filtered_hg38_dataframe_length (int): integer showing the amount of gene_ids which have low coverage regions in
         coding sequences and segmental duplications in the GRCh38 reference genome.
-        unique_common_SD_overlap_gen (int): integer showing the amount of gene_ids which have low coverage regions
-        located in coding sequences and segmental duplications in both reference genomes.
-
 
     :return:
         The barplot is saved as Coding_Sequences_in_low_coverage_regions.png
@@ -317,23 +312,22 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
     fig, ax = plt.subplots()
 
     # The labels for the x and the legend
-    xlables = ["shared", "only LC in T2T", "only LC in GRCh38"]
-    labels = ["low coverage in both", "low coverage in T2T", "low coverage in GRCh38"]
+    xlables = ["T2T: lower coverage \n Hg38: higher coverage ", "T2T: higher coverage \n Hg38: lower coverage "]
+
 
     # Makes the barplot that shows the amount of genes which have a coding sequence overlap with a low coverage region
     bars = ax.bar(xlables,
-                  [common_low_coverage_regions_genes_length,
-                   t2t_unique_low_coverage_regions_length,
+                  [t2t_unique_low_coverage_regions_length,
                    GRCh38_unique_low_coverage_regions_length],
-                  color=["blue", "green", "red"],
                   alpha=0.5,
-                  label=labels)
+                  label="no segmental duplication overlap",
+                  )
 
     # Makes an additional barplot containing the amount of genes whose low coverage coding sequence overlap with a
     # segmental duplication
-    SD_bars = ax.bar(xlables, [unique_common_SD_overlap_genes, filtered_t2t_dataframe_length,
-                     filtered_hg38_dataframe_length], color=["black", "black", "black"], alpha=0.8,
-                     label="Segmental Duplication overlap")
+    SD_bars = ax.bar(xlables, [filtered_t2t_dataframe_length,
+                     filtered_hg38_dataframe_length], color=["black", "black"], alpha=0.9,
+                     label="segmental duplication overlap")
 
     # Adds amount of total genes per category to their respective bar plots by calculating the midpoint of each bar and
     # placing the values there.
@@ -356,15 +350,14 @@ def make_barplot(common_low_coverage_regions_genes_length, t2t_unique_low_covera
                     xytext=(0, 5),
                     textcoords="offset points",
                     ha="center",
-                    va="center",
-                    fontsize=6.5)
+                    va="center")
 
     # Makes and sets the y_label
     ax.set_ylabel("Amount of genes")
 
     # Makes and sets the title
     plt.title("Amount of genes with coding sequences in low coverage regions")
-    plt.legend(fontsize=8)
+    plt.legend(fontsize="small")
 
     # Saves the barplot into a png file
     plt.savefig("Coding_Sequences_in_low_coverage_regions.png")
@@ -429,12 +422,12 @@ def main(args):
                                                                                 GRCh38_unique_dataframe,
                                                                                 common_dataframe)
 
-    make_barplot(common_genes_length,
+    make_barplot(
                  t2t_unique_length,
                  GRCh38_unique_length,
                  filtered_t2t_dataframe_length,
                  filtered_hg38_dataframe_length,
-                 unique_common_SD_overlap_genes)
+                 )
 
     write_to_file(args,
                   common_genes,

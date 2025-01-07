@@ -54,11 +54,19 @@ def plotting_SV_occurences(list_INS, list_DEL):
     # Sets the size of the figure
     plt.rcParams["figure.figsize"] = [18, 12]
 
+    del_values = []
+    ins_values = []
+
+    del_dict = {item[0]: int(item[1]) for item in list_DEL}
+    ins_dict = {item[0]: int(item[1]) for item in list_INS}
+
     # Sets the sample names as set keys to compare the deletion and insertion values by looping through the respective
     # indel list and take the value corresponding to the key (sample name)
-    keys = [item[0] for item in list_INS]
-    del_values = [int(item[1]) for item in list_DEL]
-    ins_values = [int(item[1]) for item in list_INS]
+    for key in del_dict.keys():
+        if key in ins_dict:
+            del_values.append(del_dict[key])
+            ins_values.append(ins_dict[key])
+            # Perform your comparison or any other operation here
 
     # Sum the values of identical keys to calculate totals for sorting
     total_values = [del_values[i] + ins_values[i] for i in range(len(del_values))]
@@ -66,7 +74,7 @@ def plotting_SV_occurences(list_INS, list_DEL):
     # Sort the data by total values by combining the total_values, keys, del values and ins values lists into tuples
     # which contains one element from each list on the same position. Then sort the tuples based on the first element
     # of each tuple (total_values) and then unpack the tuples into separate lists
-    sorted_data = sorted(zip(total_values, keys, del_values, ins_values), reverse=True)
+    sorted_data = sorted(zip(total_values, del_dict.keys(), del_values, ins_values), reverse=True)
     sorted_total, sorted_keys, sorted_del_values, sorted_ins_values = zip(*sorted_data)
 
     # Creates the stacked bar chart
@@ -75,11 +83,11 @@ def plotting_SV_occurences(list_INS, list_DEL):
 
     # Creates the y-label, change the size and rotation of the sample names, change the size of the numbers and creates
     # the legend and title
-    plt.ylabel("Amount of non-syntenic structural variants", fontsize=18)
+    plt.ylabel("Amount of structural variants", fontsize=18)
     plt.xticks(fontsize=12, rotation=80)
     plt.yticks(fontsize=17)
     plt.legend(loc="upper right", fontsize=15)
-    plt.title("Amount of non syntenic structural variation per sample", fontsize=20)
+    plt.title("Total amount of CDS overlapping non-syntenic structural variants per sample", fontsize=20)
 
     # plt.show(bbox_inches='tight')
 
