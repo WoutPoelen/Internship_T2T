@@ -1,0 +1,4 @@
+bamnostic==1.1.10
+matplotlib==3.10.0
+numpy==2.2.1
+pandas==2.2.3
