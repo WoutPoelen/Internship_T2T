@@ -87,8 +87,8 @@ def plotting_SV_occurences(list_INS, list_DEL):
     plt.xticks(fontsize=12, rotation=80)
     plt.yticks(fontsize=17)
     plt.legend(loc="upper right", fontsize=15)
-    plt.title("Total amount of CDS overlapping non-syntenic structural variants per sample", fontsize=20)
-
+    plt.title("Amount of T2T-specific SVs that overlap with genes per sample", fontsize=20)
+    # Amount of CDS overlapping non-syntenic INDELs per sample
     # plt.show(bbox_inches='tight')
 
     plt.savefig("Multiple_sample_non_syntenic_SV_occurences.png", bbox_inches='tight')

@@ -59,18 +59,18 @@ for file in "$input_directory"/*; do
     bcftools query -f "%CHROM\t%POS\t%INFO/END\t%INFO/SVLEN\t%INFO/SVTYPE\n" -i '(INFO/SVTYPE="DEL" || INFO/SVTYPE="INS") && (INFO/SVLEN > 30 || INFO/SVLEN < -30)' "$file" > "$outfile"
 done 
 
-# Loops through the output bed files from the previous for loop and first intersect the coding sequence regions with the structural variant. Then sorts the remaining CDS regions and gets the uniq remaining CDS and intersects the unique CDS regions with the non syntenic regions of T2T to get the unique to T2T genes that overlap with a SV
+# Intersects CDS regions with the structural variants from the bcftools loop, sorts and remove duplicate CDS, then intersects with non-syntenic regions to identify unique T2T genes overlapping with SVs
 for file in "$bcftools_output_directory"/*; do
 	filename=$(basename "$file") 
 	outfile="$gene_intersect_output_directory/$filename"
 	bedtools intersect -a "$CDS_regions" -b "$file" | sort | uniq | bedtools intersect -wb -a - -b "$non_syntenic_regions" > "$outfile"
 done
 
-# Makes a temporary file to write the output of the next intersect command that intersect the CDS regions and the non syntenic regions, sorts and gets the uniq CDS regions
+# Intersects CDS regions with non_syntenic and puts into a temporary file to be used later
 temp_result=$(mktemp)
 bedtools intersect -a "$CDS_regions" -b "$non_syntenic_regions" | sort | uniq > "$temp_result"
 
-# Loops through the output bed files from the first for loop and intersects the structural variations with the CDS regions in the temporary file to get the unique to T2T structural variations that overlap with a CDS region 
+# Intersects structural variations from the bcftools loop with the CDS regions in the temporary file to find unique T2T structural variations overlapping with CDS regions
 for file in "$bcftools_output_directory"/*; do
 	filename=$(basename "$file")
 	outfile="$SV_intersect_output_directory/$filename"

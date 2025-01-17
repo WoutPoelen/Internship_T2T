@@ -118,8 +118,17 @@ def making_barplot(t2t_count_values, grch38_count_values):
 
     # Generates the barplots with the x-value depending on the reference genome
     # SD is first so its x-value is 0 and for t2t it's -0.2 and grch38 is 0.2.
-    ax.bar(x - 0.2, t2t_values_list, width=0.4, label = "T2T", color = "blue")
-    ax.bar(x + 0.2, grch38_values_list, width=0.4, label = "GRCh38", color = "green")
+    bar1 = ax.bar(x - 0.2, t2t_values_list, width=0.4, label = "T2T", color = "blue")
+    bar2 = ax.bar(x + 0.2, grch38_values_list, width=0.4, label = "GRCh38", color = "green")
+
+    # Add text labels above the bars
+    for bar in bar1:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2.0, height, f'{int(height)}', ha='center', va='bottom', fontsize=9)
+
+    for bar in bar2:
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2.0, height, f'{int(height)}', ha='center', va='bottom', fontsize=9)
 
     # Set the locations of the category names
     ax.set_xticks(x)
@@ -132,7 +141,7 @@ def making_barplot(t2t_count_values, grch38_count_values):
 
     # Generate the legend, title and x/y label
     ax.legend()
-    ax.set_title("Amount of low coverage regions overlapping with difficult regions")
+    ax.set_title("Amount of low coverage regions overlapping with important or difficult regions")
     ax.set_ylabel("Amount of overlapping regions")
     ax.set_xlabel("Categories")
 
