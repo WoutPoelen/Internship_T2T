@@ -3,194 +3,21 @@
 # Table of contents
 1. [Introduction](#introduction)
 2. [Usage](#Usage)
-      - [Calculating and comparing the SV indel balance](#SVcomparing)
-      - [Calculating and comparing the mismatch rates](#Mismatch)
-      - [Comparing the average coverage of 500bp regions](#Coverage)
-      - [Identifying regions which have a low average coverage](#Low_coverage)
-      - [Overlapping regions that are difficult to map and regions with low coverage](#category)
-      - [Genes of which the coding sequences are in low coverage regions](#coding_sequences)
-      - [Low coverage comparison with a karyoplot ](#karyoplot)
+
 
 
 ## Introduction <a name="introduction"></a>
 
 ### text prone to change
-Over the years, several reference genomes for genomic analysis on humans have been developed with the most recent being the T2T-CHM13 (reference the paper) reference genome. Reference genomes are representative examples of the genes that a idealize organism of a certain species has. They are used to determine different kinds of variations based on the differences between the reference genome and the genomes of patients. Those deviations can then be used to diagnose genetic diseases or disorders, draw conclusions on the cause of those diseases and draw new genetic insights. As with any type of research the quality of the tools (including the reference genome) is important. Unfortunately, many difficult regions of the reference genome have been unresolved for decades now. This caused several genetic research studies to not include these regions, which might have influenced the results (reference the paper). However, do the differences between the new T2T-CHM13 (reference) and the currently used GRCh13 (reference) reference genomes actually warrant the T2T-CHM13 as a supplementary tool for the diagnostic analysis done by the Radboudumc?  
+Over the years, several human reference genomes have been developed with the most recent being the T2T-CHM13 reference genome. It adds nearly 200 million base pairs of sequence and unlocks complex regions of the human genome. This study performs two analysis to gain more insight on the read mapping coverage and structural variations when T2T-CHM13 is used. This is done to examine whether T2T-CHM13 could replace the currently used reference genome, Genome Reference Consortium Human Build 38 (GRCh38). The first analysis shows that the read mapping improves in several ways when mapped to T2T-CHM13, especially in the complex regions of the genome. However, no medically relevant genes that were exclusively  low coverage in GRCh38 had a significant read mapping coverage increase in T2T-CHM13. The second analysis indicates that the T2T-CHM13 is biased towards deletions, instead of an bias towards insertions similar to the GRCh38 reference genome. In addition, the gene SPC25 contained a T2T-exclusive heterozygous deletion showing that T2T-CHM13 can provide new structural variant for patient diagnostics. 
 
 
 ## Usage <a name="Usage"></a>
 
-### Calculating and comparing the SV indel balance <a name="SVcomparing"></a>
+Go to the [documentation folder](https://github.com/WoutPoelen/Internship_T2T/tree/main/documentation) to find how to perform the steps taken in the internship.
 
-Follow these steps to create a line plot comparing the indel balance between the GRCh38 and T2T reference genomes, and a bar plot showing the difference in the total number of insertions and deletions between the two genomes:
-1. Go to the server where the VCF files that you want to plot are located (one from the Hg38 reference genome and one from the T2T reference genome).
-2. Run the [get_amount_indels_from_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/sv_indel_balance_plot/get_amount_indels_from_file.sh) bash script with first the input VCF file and then the output file. Do this for both the T2T and GRCh38 VCF files. Following example is for the T2T VCF file:
-```
-bash get_amount_indels_from_file.sh T2T.vcf T2T_svs.txt
-```
-3. Run the [make_sv_lineplot.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/make_sv_lineplot.py) python script following the example:
-```
-python make_sv_lineplot.py t2t_sv.txt GRCh38_sv.txt
-```
-4. The file SV_indel_comparison.png contains the line plot.
-5. The file Total_indel_comparison.png contains the barplot.
+Go to the [requirements folder](https://github.com/WoutPoelen/Internship_T2T/tree/main/requirements) to see the python requirements for this internship.
 
-### Calculating and comparing the mismatch rates <a name="Mismatch"></a>
+Go to the [results folder](https://github.com/WoutPoelen/Internship_T2T/tree/main/results) to see the figures produced throughout the internship.
 
-Follow these steps to make the scatterplot showing the difference in mismatch rate between the GRCh38 and the T2T reference genomes:
-1. Get the Binary Alignment Map (BAM) files from the same sample where the reads are mapped against the GRCh38 or T2T reference genomes.
-2. Run the [make_mismatch_plot.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/mismatch_plot/make_mismatch_plot.py) python script following the example:
-```
-python make_coverage_plot.py T2T.bam GRCh38.bam
-```
-3. The file mismatch_rate_comparison.png file contains the scatter plot.
-
-### Comparing the average coverage of 500bp regions <a name="Coverage"></a>
-
-Follow these steps to create a histogram comparing the difference in average coverage for 500 base-pair regions between two reference genomes, and a scatterplot showing the difference in standard deviation of average coverage between the same regions:
-1. Get the same BAM files as used for the mismatch rate if using the same sample as used in that step is desired. Otherwise use BAM files from another sample that has BAM file from both reference genomes.
-2. Run the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) bash script with first the name of the prefix (name that will be given to sub output file), second the input BAM file and the name of the output file. Do this once with the T2T BAM file as input file and once with the GRCh38 as input file and change the prefix, so the same one won't be used twice. Following example is for the T2T bam file:
-```
-bash get_coverage_mean_regions.sh T2T.bam name_prefix
-```
-3. Get the (name_prefix).regions.bed.gz file. This file contains the average coverage per region of 500 base pairs. One regions.bed.gz file for the T2T and GRCh38 genomes.
-4. Run the [make_coverage_mean_histogram.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/make_coverage_mean_histogram.py) python script following the example:
-```
-python make_coverage_mean_histogram.py T2T.bed.gz GRCh38.bed.gz
-```
-5. The file coverage_occurrences_histogram.png contains the histogram.
-This histogram also contains the mean and standard deviation of the coverage. The occurrences of regions with coverage higher than 100 are combined and plotted at the 100+ label.
-6. The file standard_deviation_coverage.png contains the scatterplot
-
-### Identifying regions which have a low average coverage <a name="Low_coverage"></a>
-
-Follow these steps to compare the regions with low coverage between the two reference genomes in the first 5 mega base pairs of chromosome 1:
-1. Run the [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py) bash script with the two regions.bed.gz files obtained from the [get_coverage_mean_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/coverage_occurrence_histogram/get_coverage_mean_regions.sh) with the following code:
-```
-python Make_low_coverage_regions.py T2T_regions.bed.gz GRCh38_regions.bed.gz T2T_low_coverage_regions.bed GRCh38_low_coverage_regions.bed
-```
-This script calculates the median for the autosomal chrommosomes and the sex chromosomes separatly (alternative sequences were not used). Then calculates the low coverage threshold by dividing the median for the autosomal chromosomes by three and the median for the sex chromosomes by six.
-
-2. Lift the coordinates of the low average regions in the just gotten output_T2T.bed over to the GRCh38 reference genome with your preferred liftover tool. This results in a bed file containing the coordinates for the low average coverage regions on the GRCh38 reference genome.
-3. Run the [comparing_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/comparing_low_coverage_regions.py) python script with the input being the T2T.bed, GRCh38.bed and T2T_to_GRCh38.bed.
-```
-python comparing_low_coverage_regions.py T2T_BED_file GRCh38_BED_file Liftover_BED_file
-```
-4. The file low_coverage_comparison.png contains the scatterplot.
-
-### Overlapping regions that are difficult to map and regions with low coverage <a name="category"></a>
-
-Follow these steps to create a bar plot showing which difficult to sequence regions overlap with the low coverage regions. Specifically looking at centromeres, transcripts, coding sequences (CDS), and/or structural duplications. This process is binary, meaning that if multiple exons overlap with a single region, they are counted as a single overlap. 
-
-These steps are written with the assumption that step 1 of comparing low coverage regions has already been done and the low coverage files have been made.
-
-First the GRCh38:
-1. Obtain the hg38.ncbiRefSeq.gtf file ([link](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/genes/)), a bed file with structural duplications (file was given directly, so no example is available) and a gz file with the centromeres ([link](https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/)).
-2. Run the [make_low_coverage_categories_hg38.sh](htts://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/make_low_coverage_categories_hg38.sh) bash file like the following example:
-```
-bash make_low_coverage_categories_hg38.sh hg38.ncbiRefSeq.gtf hg38_segmental_duplications.bed centromeres.txt.gz ouput_CDS.bed output_transcript.bed output_centromeres.bed GRCh38_low_coverage.regions.bed GRCh38_output.bed
-```
-
-Then the T2T-CHM13:
-1. Obtain the refseq t2t genes gtf file [link](ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/).
-2. run [convert_T2T_genes_file.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/convert_T2T_genes_file.sh) to get the normal chromosome names.
-3. Obtain the bigbed (bb) file containing pericentromeric and centromeric satellites ([link](https://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?hgsid=345820279_xEDUaM4aXhxuQpQp1EiinRxuQAFH&db=hub_567047_hs1&c=chr9&g=hub_567047_censat)). Warning!!! This file doesn't contain every centromere perfectely. Some chromosomes have regions in their centromeres that will not be compared. This problem will be resolved once there is a file which contains all of the regions.
-4. Change the bb file into a bed file with the following code:
-```bigBedToBed censat.bb name_file.bed```
-5. Obtain a bed file with the structural duplications (file was given directly, so no example is available).
-6. Run the [make_low_coverage_categories_t2t.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/make_low_coverage_categories_t2t.sh) bash file like the following example:
-```
-bash make_low_coverage_categories_t2t.sh converted_refseq_t2t.gtf Structural_Duplications.bed centromeres_CenSat_Annotation.bed CDS_output.bed Transcript_output.bed Centromeres_output.bed T2T_low_coverage.bed T2T_output_categorical.bed
-```
-
-To make the plot:
-1. Run the [low_coverage regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories.py) python script like the following code example:
-```
-python script T2T_output_categorical.bed GRCh38_output_categorical.bed
-```
-2. The barplot is saves as low_coverage_categories_barplot.png.
-
-
-### Genes of which the coding sequences are in low coverage regions <a name="coding_sequences"><\a>
-Follow these steps to get the amount of genes whose coding sequence overlap with a low coverage region:
-1. Run the [low_coverage_CDS_regions.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories/low_coverage_genes/low_coverage_CDS_regions.sh) bash script with these files (some files get written to during the execution of the script and are given as empty files):
-- T2T categorical file: the BED file made in [Overlapping regions that are difficult to map and regions with low coverage](#category) containing the number difficult the map regions which overlap with a certain low coverage region in the T2T reference genome.
-- T2T categorical CDS only file:  an initially empty BED file that gets populated with the low coverage regions that overlap with one or more CDS regions in the GRCh38 reference genome during the execution of the script.
-- GRCh38 categorical file: the BED file made in [Overlapping regions that are difficult to map and regions with low coverage](#category) containing the number difficult the map regions which overlap with a certain low coverage region in the GRCh38 reference genome.
-- GRCh38 categorical CDS only file: an initially empty BED file that gets populated with the low coverage regions that overlap with one or more CDS regions in the T2T reference genome during the execution of the script.
-- T2T RefSeq file: GTF file containing the genes in the T2T reference genome. Use the gtf file gotten in step 2 of the T2T intersection steps of [Overlapping regions that are difficult to map and regions with low coverage](#category).
-- T2T CDS genes file: an initially empty BED file that gets populated with the chromosome, start, end, and gene_id of the CDS regions in the T2T reference genome during the execution of the script.
-- GRCh38 RefSeq GTF file: file containing the genes in the GRCh38 reference genome. Used in the GRCh38 intersection of [Overlapping regions that are difficult to map and regions with low coverage](#category)
-- GRCh38 CDS genes file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the CDS regions in the T2T reference genome during the execution of the script.
--  T2T CDS GeneID overlapping only file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the gene_ids which are also in the GRCh38 CDS file during the execution of the script.
--  GRCh38 CDS GeneID overlapping only file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the gene_ids which are also in the T2T CDS file during the execution of the script.
--  T2T intersected CDS file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the CDS regions in the T2T CDS GeneID overlapping file which overlap with the low coverage CDS regions in the T2T categorical CDS only file during the execution of the script.
--  GRCh38 intersected CDS file: an initially empty BED file that gets populated with the chromosome, start, end and gene_id of the CDS regions in the T2T CDS GeneID overlapping file which overlap with the low coverage CDS regions in the T2T categorical CDS only file during the execution of the script.
-
-Code example:
-```
-bash low_coverage_CDS_regions.sh T2T_categorical.bed T2T_categorical_CDS_Only.bed GRCh38_categorical.bed GRCh38_categorical_CDS_only.bed T2T_RefSeq_normal_chromosomes.gtf T2T_CDS_genes.bed GRCh38_RefSeq_file.gtf GRCh38_CDS_genes.bed T2T_CDS_GeneID_overlapping.bed GRCh38_CDS_GeneID_overlapping.bed T2T_intersected_CDS.bed GRCh38_intersected_CDS.bed
-```
-2. Run the [comparing_low_coverage_genes.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/low_coverage_categories/low_coverage_genes/comparing_low_coverage_genes.py) python script like the following code example:
-```
-python comparing_low_coverage_genes.py T2T_intersected_CDS.bed GRCh38_intersected_CDS.bed shared_genes.txt T2T_unique_genes.txt GRCh38_unqiue_genes.txt
-```
-3. The plot is saved as Coding_Sequences_in_low_coverage_regions.png
-4. The genes which have a coding sequence which overlap with a low coverage region in both files are written to shared_genes.txt. The genes with coding sequences that overlap exclusively with low coverage regions in T2T are recorded in T2T_unique.txt. The genes with coding sequences that overlap exclusively with low coverage regions in GRCh38 are recorded in GRCh38_unique.txt
-
-
-### Low coverage comparison with a karyoplot <a name="karyoplot"></a>
-
-Follow these steps to make karyoplots of the GRCh38 and T2T reference genome with the low coverage regions. The Rscripts cannot be called on the command line.
-
-Installing necessary packages:
-1. Run the following code to install BiocManager
-```
-Install.packages("BiocManager")
-```
-2. Run the following code to install KaryoploteR
-```
-BiocManager::install("KaryoploteR")
-```
-
-GRCh38 karyoplot:
-1. Copy the [karyoplot_GRCh38.R](https://github.com/WoutPoelen/Internship_T2T/blob/main/Karyoplot/karyoplot_GRCh38.R) and paste it in Rstudio.
-2. Import the low coverage GRCh38 bed file (made in [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py))  as a dataset. This will automatically make it a table which is necessary for the script to work.
-3. Change the following lines to the name of the GRCh38 low coverage file:
-```
-(chr=GRCh38_low_coverage_HG002["V1"],
-start=GRCh38_low_coverage_HG002["V2"], 
-end=GRCh38_low_coverage_HG002["V3"],
-y=GRCh38_low_coverage_HG002["V4"]))
-```
-4. Run the script.
-5. Export the karyoplot to a specific location.
-
-
-T2T karyoplot (The T2T reference genome isn't available in KaryoplotR (version 1.30.0). So a custom reference genome needs to be created.):
-1. Copy the [karyoplot_T2T.R](https://github.com/WoutPoelen/Internship_T2T/blob/main/Karyoplot/karyoplot_T2T.R) and paste it in Rstudio
-2. Import the low coverage T2T bed file (made in [Make_low_coverage_regions.py](https://github.com/WoutPoelen/Internship_T2T/blob/main/low_coverage_comparison/Make_low_coverage_regions.py)) as a dataset. This will automatically make it a table which is necessary for the script to work.
-3. Change the following lines to the name of the T2T low coverage file:
-```
-chr=T2T_low_coverage_HG002["V1"], 
-start=T2T_low_coverage_HG002["V2"], 
-end=T2T_low_coverage_HG002["V3"],
-y=T2T_low_coverage_HG002["V4"])
-```
-4. Get the chromosomes length by downloading the [NIH T2T chromosomes dataset](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_009914755.1/) at the bottom of the website and importing the file as a dataset.
-5. Change the following lines to the name of the newly imported chromosome file (start doesn't have to change):
-```
-chr=chromosome_report_t2t$UCSC.style.name,
-start=0, 
-end=chromosome_report_t2t$Seq.length
-```
-6. Get the centromere locations by importing the bed file made in step 4 of the T2T part of [Comparing difficult regions with the low coverage regions](#category)
-7. Change the following lines to the name of the Censat centromere file:
-```
-chr=filtered_centromeres_CenSat$V1,
-start=filtered_centromeres_CenSat$V2,
-end=filtered_centromeres_CenSat$V3)
-```
-8. Run the script.
-9. Export the karyoplot to a specific location.
-
+Go to the [scripts folder](https://github.com/WoutPoelen/Internship_T2T/tree/main/scripts) to see the scripts made during the internship.
