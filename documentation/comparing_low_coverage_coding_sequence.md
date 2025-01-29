@@ -41,4 +41,4 @@ python comparing_low_coverage_genes.py T2T_intersected_CDS.bed GRCh38_intersecte
 
 ---
 #### Advised next step
-**Needs to be added**
+Investigate the genes that come out of this step.
