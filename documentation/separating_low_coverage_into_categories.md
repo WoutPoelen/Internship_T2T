@@ -35,7 +35,7 @@ bash make_low_coverage_categories_hg38.sh hg38.ncbiRefSeq.gtf hg38_segmental_dup
 
 **Identifying low coverage regions in T2T that overlap with difficult-to-sequence areas:**
 
-1. Obtain the refseq t2t genes gtf file [link](ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/).
+1. Obtain the refseq t2t genes gtf file [link](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/009/914/755/GCF_009914755.1_T2T-CHM13v2.0/).
 2. run [convert_T2T_genes_RefSeq.sh](https://github.com/WoutPoelen/Internship_T2T/blob/main/scripts/bash/convert_T2T_genes_RefSeq.sh) to get the normal chromosome names.
 3. Obtain the bigbed (bb) file containing peri-centromere and centromere satellites ([link](https://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?hgsid=345820279_xEDUaM4aXhxuQpQp1EiinRxuQAFH&db=hub_567047_hs1&c=chr9&g=hub_567047_censat)). 
 Warning!!! This file doesn't contain every centromere perfectly. Some chromosomes have regions in their centromeres that will not be compared. This problem will be resolved once there is a file which contains all the regions.
